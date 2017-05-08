@@ -54,16 +54,20 @@ int IntegImg::CalSum(const FloatRect& rect){
     
     int row = imgs[0].rows;
     int col = imgs[0].cols;
+//    cout << integ_imgs.size() << endl;
+    Mat my_int_img = integ_imgs[channel-1];
     
     int x_min = int(col * rect.getX());
     int y_min = int(row * rect.getY());
     int x_max = x_min + int(col * rect.getWidth());
     int y_max = y_min + int(row * rect.getHeight());
     
-    int A = integ_imgs[channel].at<int>(x_min, y_min);
-    int B = integ_imgs[channel].at<int>(x_max, y_min);
-    int C = integ_imgs[channel].at<int>(x_min, y_max);
-    int D = integ_imgs[channel].at<int>(x_max, y_max);
+//    cout << x_min << " " << y_min << " " << x_max << " " << y_max<<endl;
+
+    int A = my_int_img.at<int>(y_min, x_min);
+    int B = my_int_img.at<int>(y_max, x_min);
+    int C = my_int_img.at<int>(y_min, x_max);
+    int D = my_int_img.at<int>(y_max, x_max);
     
     return D + A - B - C;
 }

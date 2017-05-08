@@ -36,13 +36,9 @@ int main(int argc, const char * argv[]) {
 //    
 //    waitKey(0);
     
-//    double sub_size = 24;
-//    double scan_scale = 1.25;
-//    int num_scale = 12;
-    
-    int rows = img.rows;
-    int cols = img.cols;
-    cout << rows << "   " << cols << endl;
+//    int rows = img.rows;
+//    int cols = img.cols;
+//    cout << rows << "   " << cols << endl;
     
     // calculate integral image
     // an image with each pixel value equals to the integral
@@ -69,7 +65,7 @@ int main(int argc, const char * argv[]) {
                 for(int idt = 0; idt < 6; idt++){
                     
                     HaarFeature my_feature = HaarFeature(rect, idt);
-//                    haar_features.push_back(my_feature);
+                    haar_features.push_back(my_feature);
                     haar_feature_val.push_back(my_feature.Eval(Int_Img));
 //                    int pixel_sum = Int_Img.CalSum(rect);
                     
@@ -78,6 +74,7 @@ int main(int argc, const char * argv[]) {
         }
     }
     
+    // display the feature values
     for(int i = 0; i < 192; i++){
         cout << haar_feature_val[i] << "    ";
     }
