@@ -7,10 +7,10 @@ import random
 
 sys.path.append('./Config.py')
 from Config import Config
-sys.path.append('./HaarFeature.py')
-from HaarFeature import HaarFeature
+sys.path.append('./HaarFeatures.py')
+from HaarFeatures import HaarFeatures
 sys.path.append('./Kernels.py')
-import Kernels 					# which kernel to import
+from Kernels import GaussianKernel	# which kernel to import
 sys.path.append('./Sample.py')
 from Sample import Sample
 sys.path.append('./Rect.py')
@@ -54,7 +54,7 @@ class LaRank:
 
 	# (const Config& config, const Features& features, const Kernel& kernel)
 	def __init__(self, conf, features, kernel):
-		self.m_config = config 									# Configuration class
+		self.m_config = conf 									# Configuration class
 		self.m_features = features 								# Feature class
 		self.m_kernel = kernel 									# Kernel class
 		self.m_C = conf.svmC 									# slack variable in svm
@@ -119,25 +119,25 @@ class LaRank:
 		sp.refCount = 0
 		self.add_sps(sp) # self.m_sps.extend(sp)
 
-		ProcessNew( len(self.m_sps)-1 )
-		BudgetMaintenance()
+		self.ProcessNew( len(self.m_sps)-1 )
+		self.BudgetMaintenance()
 
 		for i in range(10):
-			Reprocess()
-			BudgetMaintenance()
+			self.Reprocess()
+			self.BudgetMaintenance()
 
 	def BudgetMaintenance(self):
 		if (self.m_config.svmBudgetSize > 0):
 			while (len(self.m_svs) > self.m_config.svmBudgetSize):
-				BudgetMaintenanceRemove()
+				self.BudgetMaintenanceRemove()
 
-	def Reprocess():
-		ProcessOld()
+	def Reprocess(self):
+		self.ProcessOld()
 		for i in range(10):
-			Optimize()
+			self.Optimize()
 
 	# (const FloatRect& y1, const FloatRect& y2)
-	def Loss(y1, y2):
+	def Loss(self, y1, y2):
 		return 1 - y1.Overlap(y2)
 
 
@@ -179,20 +179,20 @@ class LaRank:
 
 		# check if we should remove either sv now
 		if (abs(svp.b) < 1e-8):
-			RemoveSupportVector(ipos)
+			self.RemoveSupportVector(ipos)
 			if (ineg == len(self.m_svs)):
 				# ineg and ipos will have been swapped during sv removal
 				ineg = ipos
 
 		if (abs(svn.b) < 1e-8):
-			RemoveSupportVector(ineg)
+			self.RemoveSupportVector(ineg)
 
 	# (int ind)
 	def MinGradient(self, ind):
 		sp = self.m_sps[ind]
 		minGrad = [-1, sys.float_info.max]
 		for i in range(len(sp.yv)):
-			grad = -Loss(sp.yv[i], sp.yv[sp.y]) - Evaluate(sp.x[i], sp.yv[i])
+			grad = -self.Loss(sp.yv[i], sp.yv[sp.y]) - self.Evaluate(sp.x[i], sp.yv[i])
 			if (grad < minGrad[1]):
 				minGrad[0] = i
 				minGrad[1] = grad
@@ -201,12 +201,12 @@ class LaRank:
 	# (int ind)
 	def ProcessNew(self, ind):
 		# gradient is -F(x, y) since loss = 0
-		yp = AddSupportVector(self.m_sps[ind], self.m_sps[ind].y, -Evaluate( self.m_sps[ind].x[ self.m_sps[ind].y ], self.m_sps[ind].yv[ self.m_sps[ind].y ] ))
+		yp = self.AddSupportVector(self.m_sps[ind], self.m_sps[ind].y, -self.Evaluate( self.m_sps[ind].x[ self.m_sps[ind].y ], self.m_sps[ind].yv[ self.m_sps[ind].y ] ))
 
-		minGrad = MinGradient(ind)
-		yn = AddSupportVector(self.m_sps[ind], minGrad[0], minGrad[1])
+		minGrad = self.MinGradient(ind)
+		yn = self.AddSupportVector(self.m_sps[ind], minGrad[0], minGrad[1])
 
-		SMOStep(yp, yn)
+		self.SMOStep(yp, yn)
 
 	def ProcessOld(self):
 		if (len(self.m_sps) == 0):
@@ -232,7 +232,7 @@ class LaRank:
 			return 
 
 		# find potentially new sv with smallest grad
-		minGrad = MinGradient(ind)
+		minGrad = self.MinGradient(ind)
 		yn = -1
 		for i in range(len(self.m_svs)):
 			if (self.m_svs[i].x != self.m_sps[ind]):
@@ -244,9 +244,9 @@ class LaRank:
 
 		# add new sv
 		if (yn == -1):
-			yn = AddSupportVector(self.m_sps[ind], minGrad[0], minGrad[1])
+			yn = self.AddSupportVector(self.m_sps[ind], minGrad[0], minGrad[1])
 
-		SMOStep(yp, yn)
+		self.SMOStep(yp, yn)
 
 	def Optimize(self):
 		if (len(self.m_sps) == 0):
@@ -278,7 +278,7 @@ class LaRank:
 			print("!!!!!!!!!!!!!!!!!!!!!!!")
 			return
 
-		SMOStep(yp, yn)
+		self.SMOStep(yp, yn)
 
 	def AddSupportVector(self, x, y, g):
 		sv = SupportVector(0.0, x, y, g) 
@@ -328,7 +328,7 @@ class LaRank:
 
 		# make sure the support vector is at the back, this lets us keep the kernel matrix cached and valid
 		if (ind < self.m_svs.size - 1):
-			SwapSupportVectors(ind, len(self.m_svs)-1)
+			self.SwapSupportVectors(ind, len(self.m_svs)-1)
 			ind = len(self.m_svs) - 1
 		del self.m_svs[ind]
 		del self.m_svs[-1]
@@ -358,23 +358,23 @@ class LaRank:
 		self.m_svs[yp].b += self.m_svs[yn].b
 
 		# remove negative sv
-		RemoveSupportVector(yn)
+		self.RemoveSupportVector(yn)
 		# yp and yn will have been swapped during sv removal
 		if (yp == len(self.m_svs)):
 			yp = yn
 		# also remove positive sv
 		if (self.m_svs[yp].b < 1e-8):
-			RemoveSupportVector(yp)
+			self.RemoveSupportVector(yp)
 
 		# update gradients
 		# TODO: this could be made cheaper by just adjusting incrementally rather than recomputing
 		for i in range(len(self.m_svs)):
 			svi = self.m_svs[i]
-			svi.g = -Loss(svi.x.yv[svi.y], svi.x.yv[svi.x.y]) - Evaluate(svi.x.x[svi.y], svi.x.yv[svi.y])
+			svi.g = -self.Loss(svi.x.yv[svi.y], svi.x.yv[svi.x.y]) - self.Evaluate(svi.x.x[svi.y], svi.x.yv[svi.y])
 
 	def Debug(self):
 		print("%d/%d support patterns/vectors" % (len(self.m_sps), (self.m_svs)))
-		UpdateDebugImage()
+		self.UpdateDebugImage()
 		cv2.imshow("learner", self.m_debugImage)
 
 	def UpdateDebugImage(self):
@@ -449,15 +449,35 @@ class LaRank:
 		I[:] = (255, 255, 255)
 		
 		# GraphUtils.cpp !!!!!!!!!!!!!!!!!!!!
-		# incorporate with GraphUtils later
+		# wait to incorporate with GraphUtils later !!!!!!!!!!!!!
 		# II = I
 		# setGraphColor(0);
 		# drawFloatGraph(vals, n, &II, 0.f, 0.f, I.cols, I.rows);
 		# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
+###### DEBUG MODE ########
+if __name__ == '__main__':
+	# set parameters
+	# configPath = './config.txt'
+	conf = Config('./config.txt')
 
+	# print(len(conf.features))
+	# print(conf.svmC)
+	# print(conf.svmBudgetSize)
+	main_features = []
+	main_kernels = []
+	main_featureCount = []
+	numFeatures = len(conf.features)
+	for i in range(numFeatures):
+		main_features.append(HaarFeatures(conf))
+		main_kernels.append(GaussianKernel(conf.features[i].params[0]))
+		main_featureCount.append(main_features[-1].GetCount())
 
+	# debug LaRank
+	m_pLearner = LaRank(conf, main_features[-1], main_kernels[-1])
+
+###### DEBUG MODE ########
 
 
 

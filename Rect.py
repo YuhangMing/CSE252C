@@ -6,6 +6,10 @@ class Rect:
     def initFromRect(self, r):
         self.set(r.getX(), r.getY(), r.getWidth(), r.getHeight())
 
+    # Yohann
+    def initFromList(self, l):
+        self.set(l[0], l[1], l[2], l[3])
+    ######################################
   
     # Getters
     def getX(self):
