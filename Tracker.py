@@ -13,22 +13,23 @@ import LaRank
 class Tracker:
     def __init__(self, config):
         self.config = config
-        self.reset()
+        self.Reset()
  
-    def initialize(self, frame, rect);
+    def Initialize(self, frame, rect);
         r = Rect()
         self.bb = r.initializeFromRect(rect)
-        image = IntegImg(frame) # orImgRep
-        self.updateLearner(image)
+        #image = IntegImg(frame) # orImgRep
+        img = ImageRep(frame)
+        self.UpdateLearner(img)
         self.initialised = True
 
-    def isInitialized(self):
+    def IsInitialized(self):
         return self.initilised
          
-    def getBox(self):
+    def GetBox(self):
         return self.box
 
-    def reset(self):
+    def Reset(self):
         self.initialized = False
         self.needIntegImg = False
         self.bb = None
@@ -52,8 +53,9 @@ class Tracker:
         self.pLearner = LaRank(self.config, self.features[-1], self.kernels[-1])
         
 
-    def track(self, frame):
-        img = IntegImg(frame)
+    def Track(self, frame):
+        #img = IntegImg(frame)
+        img = ImageRep(frame)
 
         rects = Sampler.PixelSamples(self.bb, self.config.searchRadius)
         keptRects = []
@@ -73,10 +75,16 @@ class Tracker:
 
         if not bestIndex == -1:
             self.bb = keptRects[bestIndex]
-            updateLearner(img)
-        
+            UpdateLearner(img)
 
-
-
-    
-
+    def UpdateLearner(self, img):
+        rects = Sampler.RadialSamples(self.bb, 2, self.config.searchRadius, 5, 16)
+        keptRects = []
+        keptRects.append(rects[0])
+        for i, rect in enumerate(rects):
+            if i < 1:
+                continue
+            if rect[i].IsInside(img.GetRect() :
+                keptRects.append(rect)
+        sample = MultiSample(img, keptRects)
+        self.pLearner.Update(sample, 0)

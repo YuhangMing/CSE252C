@@ -76,7 +76,7 @@ class Rect:
         
         intersection = width * height
         union = self.getArea() + r2.getArea() - intersection
-        return intersection / union
+        return float(intersection) / float(union)
 
     def translate(self, dx, dy):
         self.x += dx
@@ -151,8 +151,24 @@ class Rect:
         
         intersection = width * height
         union = self.getArea() + r2.getArea() - intersection
-        return intersection / union
+        return float(intersection) / float(union)
 
     def Translate(self, dx, dy):
         self.x += dx
         self.y += dy
+
+if __name__ == "__main__":
+    r1 = Rect(0, 0, 5, 5)
+    r2 = Rect(2, 2, 7, 7)
+    r3 = Rect()
+    r3.initFromRect(r2)
+    print(r2.XMin())
+    print(r2.XCentre())
+    print(r2.XMax())
+    print(r2.YMin())
+    print(r2.YCentre())
+    print(r2.YMax())
+    print(r2.Area())
+    print(r1.isInside(r2))
+    print(r1.overlap(r2))
+    print(r2.isInside(r3))
