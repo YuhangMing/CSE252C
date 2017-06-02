@@ -6,8 +6,8 @@
 import sys
 import cv2 as cv
 import numpy as np
-sys.path.append('/Users/a_jing/Documents/Courses/CSE 252C/Project/code/Ours/Rect.py')
-import Rect
+sys.path.append('./Rect.py')
+from Rect import Rect
 
 kNumBins = 16;
 class ImageRep:
@@ -25,14 +25,14 @@ class ImageRep:
                     self.m_integralHistImages.append(cv.createMat(image.rows+1, image.cols+1, cv.CV_32SC1))
         
         if colour:
-            assert(image.channels() is 3)
+            assert(image.channels() == 3)
             b, g, r = cv.split(image)
             self.m_images = [b, g, r]
         else:
-            assert(image.channels() is 3 or image.channels() is 1)
-            if image.channels() is 3:
+            assert(image.channels() == 3 or image.channels() == 1)
+            if image.channels() == 3:
                 self.m_images[0] = cv.cvtColor(image, cv.COLOR_RGB2GRAY)
-            elif image.channels() is 1:
+            elif image.channels() == 1:
                 np.copyto(self.m_images[0], image)
         
         if computeIntegral:
@@ -47,7 +47,7 @@ class ImageRep:
                 for y in range(image.rows):
                     for x in range(image.cols):
                         sbin = int(float(self.m_images[0][y][x])/256.0*kNumBins)
-                        tmp[y][x] = 1 if sbin is j else 0
+                        tmp[y][x] = 1 if sbin == j else 0
                 self.m_integralImages[j] = cv.integral(tmp)
    
     
