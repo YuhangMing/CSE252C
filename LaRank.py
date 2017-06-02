@@ -384,7 +384,7 @@ class LaRank:
 				tmp = 1 if (iset == 0) else -1
 				continue if (tmp * self.m_svs[i].b < 0.0)
 
-				drawOrder.extend(i)
+				drawOrder.append(i)
 				vals[ind] = self.m_svs[i].b
 				ind += 1
 
@@ -406,10 +406,12 @@ class LaRank:
 		kKernelPixelSize = 2
 		kernelSize = kKernelPixelSize * n
 
-		# Eigen function !!!!!!!!!!!!!!!!!!!!
-		kmin = self.m_K.minCoeff()
-		kmax = self.m_K.maxCoeff()
-		# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
+		# kmin = self.m_K.minCoeff()
+		kmin = self.m_K.min()
+		# kmax = self.m_K.maxCoeff()
+		kmax = self.m_K.max()
+		
 
 		if (kernelSize < self.m_debugImage.shape(1) and kernelSize < self.m_debugImage.shape(0)):
 			K = self.m_debugImage[(self.m_debugImage.shape(1)-kernelSize) : self.m_debugImage.shape(1), (self.m_debugImage.shape(0)-kernelSize) : self.m_debugImage.shape(0)]
