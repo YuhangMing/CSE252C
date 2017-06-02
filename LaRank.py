@@ -5,6 +5,19 @@ import cv2
 import sys
 import random
 
+sys.path.append('./Config.py')
+from Config import Config
+sys.path.append('./HaarFeature.py')
+from HaarFeature import HaarFeature
+sys.path.append('./Kernels.py')
+import Kernels 					# which kernel to import
+sys.path.append('./Sample.py')
+from Sample import Sample
+sys.path.append('./Rect.py')
+from Rect import Rect
+sys.path.append('./GraphUtils.py')
+import GraphUtils
+
 class SupportPattern:
 	# std::vector<Eigen::VectorXd> x; std::vector<FloatRect> yv; std::vector<cv::Mat> images; int y; int refCount;
 	def __init__(self):
@@ -31,11 +44,8 @@ class SupportVector:
 		self.g = g 			# double, value of the gradient(mini)
 		self.image = image 	# Mat
 
-	def add_image
-
 class LaRank:
 
-	# 定义基本属性
 	kMaxSVs = 2000
 	kTileSize = 30
 	
@@ -69,7 +79,7 @@ class LaRank:
 		return f
 
 	# (const MultiSample& sample, std::vector<double>& results)
-	def Eval(self.sample, results): 
+	def Eval(self, sample, results): 
 		centre = sample.GetRects()[0]
 		self.m_features.Eval(sample, fvs)	# Eval function in Features, results in fvs variable
 		results[:] = []
@@ -88,7 +98,7 @@ class LaRank:
 			r = rects[i]
 			r.Translate(-center.XMin(), -center.YMin())	# Translate function in Rect class
 			sp.add_yv(r)
-			if (!self.m_config.quietMode and self.m_config.degugMode):
+			if (not(self.m_config.quietMode) and self.m_config.degugMode):
 				im = np.zeros((kTileSize, kTileSize), np.uint8)
 				# im = cv2.CreatMat((kTileSize, kTileSize), cv2.CV_8UC1)
 				rect = rects[i]
@@ -109,7 +119,7 @@ class LaRank:
 		sp.refCount = 0
 		self.add_sps(sp) # self.m_sps.extend(sp)
 
-		ProcessNew(len(self.m_sps)-1)
+		ProcessNew( len(self.m_sps)-1 )
 		BudgetMaintenance()
 
 		for i in range(10):
@@ -142,15 +152,16 @@ class LaRank:
 
 	# (int ipos, int ineg)
 	def SMOStep(self, ipos, ineg):
-		return if (ipos == ineg)
+		if (ipos == ineg):
+			return 
 		svp = self.m_svs[ipos]
 		svn = self.m_svs[ineg]
 		assert (svp.x == svn.x)
 		sp = svp.x
 
 		# print("SMO: gpos: %d gneg:  " % (svp.g, svp.g))
-		if ((svp->g - svn->g) < 1e-5):
-			# print("SMO: skipping")
+		if ((svp.g - svn.g) < 1e-5):
+			print("SMO: skipping")
 		else:
 			kii = self.m_K[ipos, ipos] + self.m_K[ineg, ineg] - 2 * self.m_K[ipos, ineg]
 			lu = (svp.g - svn.g) / kii
@@ -198,7 +209,8 @@ class LaRank:
 		SMOStep(yp, yn)
 
 	def ProcessOld(self):
-		return if (len(self.m_sps) == 0)
+		if (len(self.m_sps) == 0):
+			return
 
 		# choose pattern to process
 		ind = random.randrange(len(self.m_sps))
@@ -207,7 +219,8 @@ class LaRank:
 		yp = -1
 		maxGrad = -sys.float_info.max
 		for i in range(len(self.m_svs)):
-			continue if (self.m_svs[i].x != self.m_sps[ind])
+			if (self.m_svs[i].x != self.m_sps[ind]):
+				continue
 
 			svi = self.m_svs[i]
 			if (svi.g > maxGrad and svi.b < self.m_C * (svi.y == self.m_sps[ind].y)):
@@ -215,25 +228,29 @@ class LaRank:
 				maxGrad = svi.g
 
 		assert (yp != -1)
-		return if (yp == -1)
+		if (yp == -1):
+			return 
 
 		# find potentially new sv with smallest grad
 		minGrad = MinGradient(ind)
 		yn = -1
 		for i in range(len(self.m_svs)):
-			continue if (self.m_svs[i].x != self.m_sps[ind])
+			if (self.m_svs[i].x != self.m_sps[ind]):
+				continue 
 
 			if (self.m_svs[i].y == minGrad[0]):
 				yn = i
 				break
 
 		# add new sv
-		yn = AddSupportVector(self.m_sps[ind], minGrad[0], minGrad[1]) if (yn == -1)
+		if (yn == -1):
+			yn = AddSupportVector(self.m_sps[ind], minGrad[0], minGrad[1])
 
 		SMOStep(yp, yn)
 
 	def Optimize(self):
-		return if (len(self.m_sps) == 0)
+		if (len(self.m_sps) == 0):
+			return
 
 		# choose pattern to optimize
 		ind = random.randrange(len(self.m_sps))
@@ -243,7 +260,8 @@ class LaRank:
 		maxGrad = -sys.float_info.max
 		minGrad = sys.float_info.max
 		for i in range(len(self.m_svs)):
-			continue if (self.m_svs[i].x != self.m_sps[ind])	# search among the support patterns
+			if (self.m_svs[i].x != self.m_sps[ind]):	# search among the support patterns
+				continue
 
 			svi = self.m_svs[i]
 			if (svi.g > maxGrad and svi.b < self.m_C * (svi.y == self.m_sps[ind].y)):
@@ -342,9 +360,11 @@ class LaRank:
 		# remove negative sv
 		RemoveSupportVector(yn)
 		# yp and yn will have been swapped during sv removal
-		yp = yn if (yp == len(self.m_svs))
+		if (yp == len(self.m_svs)):
+			yp = yn
 		# also remove positive sv
-		RemoveSupportVector(yp) if (self.m_svs[yp].b < 1e-8)
+		if (self.m_svs[yp].b < 1e-8):
+			RemoveSupportVector(yp)
 
 		# update gradients
 		# TODO: this could be made cheaper by just adjusting incrementally rather than recomputing
@@ -361,7 +381,8 @@ class LaRank:
 		# self.m_debugImage.setTo(0)	# already all zero matrix
 		
 		n = len(self.m_svs)
-		return if (n == 0)
+		if (n == 0):
+			return
 
 		kCanvasSize = 600
 		gridSize = int(math.sqrt(n-1)) + 1
@@ -382,7 +403,8 @@ class LaRank:
 		for iset in range(2):
 			for i in range(n):
 				tmp = 1 if (iset == 0) else -1
-				continue if (tmp * self.m_svs[i].b < 0.0)
+				if (tmp * self.m_svs[i].b < 0.0):
+					continue
 
 				drawOrder.append(i)
 				vals[ind] = self.m_svs[i].b
@@ -427,13 +449,11 @@ class LaRank:
 		I[:] = (255, 255, 255)
 		
 		# GraphUtils.cpp !!!!!!!!!!!!!!!!!!!!
-		II = I
-		setGraphColor(0);
-		drawFloatGraph(vals, n, &II, 0.f, 0.f, I.cols, I.rows);
+		# incorporate with GraphUtils later
+		# II = I
+		# setGraphColor(0);
+		# drawFloatGraph(vals, n, &II, 0.f, 0.f, I.cols, I.rows);
 		# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
 
 
 
