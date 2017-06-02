@@ -6,10 +6,10 @@
 import sys
 import cv2 as cv
 import numpy as np
-sys.path.append('/Users/a_jing/Documents/Courses/CSE 252C/Project/code/Ours/Rect.py')
-import Rect
-sys.path.append('/Users/a_jing/Documents/Courses/CSE 252C/Project/code/Ours/ImageRep.py')
-import ImageRep
+sys.path.append('./Rect.py')
+from Rect import Rect
+sys.path.append('./ImageRep.py')
+from ImageRep import ImageRep
 
 class Sample:
     def __init__(self, image, roi):

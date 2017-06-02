@@ -31,23 +31,23 @@ def getGraphColor():
         usingCustomGraphColor = False
         return customGraphColor
     countGraph += 1
-    if countGraph is 1:
+    if countGraph == 1:
         return LIGHTBLUE
-    elif countGraph is 2:
+    elif countGraph == 2:
         return LIGHTGREEN
-    elif countGraph is 3:
+    elif countGraph == 3:
         return LIGHTRED
-    elif countGraph is 4:
+    elif countGraph == 4:
         return BLUEGREEN
-    elif countGraph is 5:
+    elif countGraph == 5:
         return REDGREEN
-    elif countGraph is 6:
+    elif countGraph == 6:
         return REDBLUE
-    elif countGraph is 7:
+    elif countGraph == 7:
         return DARKBLUE
-    elif countGraph is 8:    
+    elif countGraph == 8:    
         return DARKGREEN
-    elif countGraph is 9:
+    elif countGraph == 9:
         return DARKRED
     else:
         countGraph = 0
@@ -87,7 +87,7 @@ def drawGraph(arraySrc, nArrayLength, imageDst, minV=0, maxV=0, width=0, height=
             maxV = v if v > maxV else maxV
     
     diffV = maxV - minV
-    diffV = 1e-7 if diffV is 0 else diffV
+    diffV = 1e-7 if diffV == 0 else diffV
     fscale = float(s) / diffV
     
     # Draw the horizontal and vertical axis
@@ -111,7 +111,7 @@ def drawGraph(arraySrc, nArrayLength, imageDst, minV=0, maxV=0, width=0, height=
         ptPrev = ptNew
         
     # Write the graph label
-    if graphLabel is not None and graphLabel is not '':
+    if graphLabel != None and graphLabel != '':
          cv2.putText(imageGraph, graphLabel, (30, 10), cv2.FONT_HERSHEY_PLAIN, 2, GREY, 0.1)
         
     return imageGraph
@@ -122,7 +122,7 @@ def showGraph(name, arraySrc, nArrayLength, delay_ms=500, background=None):
     cv2.imshow(name, imageGraph)
     cv2.waitKey(10)
     cv2.waitKey(delay_ms)
-    cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
     
             
     

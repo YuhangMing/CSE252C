@@ -12,57 +12,57 @@ class Feature:
 
 class Config:
     #FeatureName = {'kFeatureTypeHaar':'haar', 'kFeatureTypeRaw':'raw', \
-    #               'kFeatureTypeHistogram':'histogram'}
+    #               'kFeatureTypeH==togram':'h==togram'}
     #KernelName = {'kKernelLinear':'linear', 'kKernelTypeGaussian':'gaussian', \
     #             'kKernelTypeIntersection':'intersection', 'kKernelTypeChi2':'chi2'}
     def __init__(self):
         self.SetDefaults()
     def __init__(self, path):
         self.SetDefaults()       
-        if os.path.isfile(path) is False:
+        if os.path.isfile(path) == False:
             print 'Error: could not load config file' + path
             return
         f = open(path,'r')
         for line in f:
             words = filter(None, line.split())
             
-            if (not words) or (len(words) < 2) or (words[0] is '#') or (words[1] is not '='):
+            if (not words) or (len(words) < 2) or (words[0] == '#') or (words[1] != '='):
                 continue
-            if words[0] is 'seed':
-                self.seed = words[2]
-            elif words[0] is 'quietMode':
+            if words[0] == 'seed':
+                self.seed = int(words[2])
+            elif words[0] == 'quietMode':
                 self.quietMode = words[2]
-            elif words[0] is 'debugMode':
+            elif words[0] == 'debugMode':
                 self.debugMode = words[2]
-            elif words[0] is 'sequenceBasePath':
+            elif words[0] == 'sequenceBasePath':
                 self.sequenceBasePath = words[2]
-            elif words[0] is 'sequenceName':
+            elif words[0] == 'sequenceName':
                 self.sequenceName = words[2]
-            elif words[0] is 'resultsPath':
+            elif words[0] == 'resultsPath':
                 self.resultsPath = words[2]
-            elif words[0] is 'frameWidth':
-                self.frameWidth = words[2]
-            elif words[0] is 'frameHeight':
-                self.frameHeight = words[2]
-            elif words[0] is 'searchRadius':
-                self.searchRadius = words[2]
-            elif words[0] is 'svmC':
-                self.svmC = words[2]
-            elif words[0] is 'svmBudgetSize':
-                self.svmBudgetSize = words[2]
-            elif words[0] is 'feature':
+            elif words[0] == 'frameWidth':
+                self.frameWidth = int(words[2])
+            elif words[0] == 'frameHeight':
+                self.frameHeight = int(words[2])
+            elif words[0] == 'searchRadius':
+                self.searchRadius = int(words[2])
+            elif words[0] == 'svmC':
+                self.svmC = float(words[2])
+            elif words[0] == 'svmBudgetSize':
+                self.svmBudgetSize = int(words[2])
+            elif words[0] == 'feature':
                 fkp = Feature()
                 if len(words) < 4:
                     continue
-                if words[2] is 'haar' or 'raw' or 'histogram':
+                if words[2] == 'haar' or words[2] == 'raw' or words[2] =='histogram':
                     fkp.featureName = words[2]
                 else:
                     print 'Error: unrecognised feature: ' + words[2]
                     continue
-                if words[3] is 'linear' or 'gaussian' or 'intersection' or 'chi2':
+                if words[3] == 'linear' or words[3] == 'gaussian' or words[3] == 'intersection' or words[3] =='chi2':
                     fkp.kernelName = words[3]
-                    if words[3] is 'gaussian':
-                        if len(words) is 5:
+                    if words[3] == 'gaussian':
+                        if len(words) == 5:
                             fkp.params.append(words[4])
                         else:
                             print 'Error: unreceived param. '  
@@ -79,23 +79,23 @@ class Config:
         self.seed, self.searchRadius, self.svmC, self.svmBudgetSize = 0, 30, 1.0, 0
         self.features = []
         
-    def __str__(self):
+    def PrintStr(self):
         print 'Config: '
-        print '  QuietMode\t= ' + self.quieMode
-        print '  DebugMode\t= ' + self.debugMode
-        print '  SequenceBasePath\t= '+ self.sequenceBasePath
-        print '  SequenceName\t= ' + self.sequenceName
-        print '  ResultsPath\t= ' + self.resultsPath
-        print '  FrameWidth\t= ' + self.frameWidth
-        print '  FrameHeight\t= ' + self.frameHeight
-        print '  Seed\t= ' + self.seed
-        print '  SearchRadius\t= ' + self.searchRadius
-        print '  svmC\t= ' + self.svmC
-        print '  svmBudgetSize\t= ' + self.svmBudgetSize
-        for i in range(self.features):
-            print '  FeatureName\t= ' + self.features[i].featureName
-            print '  KernelName\t= ' + self.features[i].kernelName
-            for j in range(self.features[i].params):
+        print '  QuietMode\t= %s' % self.quietMode
+        print '  DebugMode\t= %s' % self.debugMode
+        print '  SequenceBasePath\t= %s' % self.sequenceBasePath
+        print '  SequenceName\t= %s' % self.sequenceName
+        print '  ResultsPath\t= %s' % self.resultsPath
+        print '  FrameWidth\t= %.2f' % self.frameWidth
+        print '  FrameHeight\t= %.2f' % self.frameHeight
+        print '  Seed\t= %.2f' % self.seed
+        print '  SearchRadius\t= %.2f' % self.searchRadius
+        print '  svmC\t= %.2f' % self.svmC
+        print '  svmBudgetSize\t= %.2f' % self.svmBudgetSize
+        for i in range(len(self.features)):
+            print '  FeatureName\t= %s' % self.features[i].featureName
+            print '  KernelName\t= %s' % self.features[i].kernelName
+            for j in range(len(self.features[i].params)):
                 print '  ', self.features[i].params[j]
             print '\n'
         
