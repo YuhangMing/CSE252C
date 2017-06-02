@@ -7,27 +7,31 @@ import random
 
 class SupportPattern:
 	# std::vector<Eigen::VectorXd> x; std::vector<FloatRect> yv; std::vector<cv::Mat> images; int y; int refCount;
-	# def __init__(self, x, yv, images, y, refCount):
-		# self.x = x
-		# self.yv = yv
-		# self.images = images
-		# self.y = y
-		# self.refCount = refCount
 	def __init__(self):
-		self.x = []
-		self.yv = []
-		self.images = []
-		self.y = 0
-		self.refCount = 0
+		self.x = []			# eigenVector
+		self.yv = []		# floadRect
+		self.images = []	# Mat
+		self.y = 0			# int
+		self.refCount = 0	# int
+
+	def add_x(self, new_x):
+		self.x.append(new_x)
+	def add_yv(self, new_yv):
+		self.yv.append(new_yv)
+	def add_image(self, new_image):
+		self.images.append(new_image)
 
 class SupportVector:
 	# SupportPattern* x; int y; double b; double g; cv::Mat image;
-	def __init__(self, x, y, b, g, image):
-		self.x = x
-		self.y = y
-		self.b = b
-		self.g = g
-		self.image = image
+	def __init__(self, x=0.0, y=0.0, b=0.0, g=0.0, image = []):
+		# x, y, b, g are definded in Update step, images are added in UpdateDebugImage step, use np.array to asign size directly
+		self.x = x 			# supportPattern
+		self.y = y 			# int, index of the rects in sp.yv
+		self.b = b 			# double, bias
+		self.g = g 			# double, value of the gradient(mini)
+		self.image = image 	# Mat
+
+	def add_image
 
 class LaRank:
 
@@ -35,25 +39,32 @@ class LaRank:
 	kMaxSVs = 2000
 	kTileSize = 30
 	
-	m_sps = []	# SupportPattern vector/list
-	m_svs = []	# SupportVector vector/list
+	# m_sps = []	# SupportPattern vector/list
+	# m_svs = []	# SupportVector vector/list
 
 	# (const Config& config, const Features& features, const Kernel& kernel)
 	def __init__(self, conf, features, kernel):
-		self.m_config = conf
-		self.m_features = features
-		self.m_kernel = kernel
-		self.m_C = conf.svmC
+		self.m_config = config 									# Configuration class
+		self.m_features = features 								# Feature class
+		self.m_kernel = kernel 									# Kernel class
+		self.m_C = conf.svmC 									# slack variable in svm
 		N = conf.svmBudgetSize + 2 if conf.svmBudgetSize > 0 else kMaxSVs	# int N = conf.svmBudgetSize > 0 ? conf.svmBudgetSize+2 : kMaxSVs;
-		self.m_K = np.zeros((N, N), dtype=np.uint8)
-		self.m_debugImage = np.zeros((800, 600, 3), np.uint8)
-		self.m_C = conf.svmC
+		self.m_K = np.zeros((N, N), dtype=np.uint8) 			# Kernal matrix
+		self.m_debugImage = np.zeros((800, 600, 3), np.uint8) 	# sv images shown in learner window
+
+		self.m_sps = []
+		self.m_svs = []
+
+	def add_sps(self, new_sp):
+		self.m_sps.append(new_sp)
+	def add_svs(self, new_sv):
+		self.m_svs.append(new_sv)
 
 	# (const Eigen::VectorXd& x, const FloatRect& y)
 	def Evaluate(self, x, y):
-		f = 0
-		for i in range(m_svs.size()):
-			sv = m_svs[i]
+		f = 0.0
+		for i in range(len(self.m_svs)):
+			sv = self.m_svs[i]
 			f += sv.b * self.m_kernel.Eval(x, sv.x.x[sv.y]) # Eval function in kernel class
 		return f
 
@@ -62,20 +73,21 @@ class LaRank:
 		centre = sample.GetRects()[0]
 		self.m_features.Eval(sample, fvs)	# Eval function in Features, results in fvs variable
 		results[:] = []
-		for i in range(fvs.size()):
+		for i in range(len(fvs)):
+			# express y in coord fram of center sample
 			y = sample.GetRects()[i]
 			y.Translate(-centre.XMin(), -centre.YMin())	# functions in Rect
 			results.append(Evaluate(fvs[i], y))
 
 	# (const MultiSample& sample, int y)
 	def Update(self, sample, y):
-		sp = SupportPattern
-		rects = sample.GetRects()	# GetRects function in Sample class
+		sp = SupportPattern()
+		rects = sample.GetRects()	# GetRects function in Sample class, should be a list of rects, 4xn
 		center = rects[y]
-		for i in range(rects.size()):
+		for i in range(len(rects)):
 			r = rects[i]
 			r.Translate(-center.XMin(), -center.YMin())	# Translate function in Rect class
-			sp.yv.append(r)
+			sp.add_yv(r)
 			if (!self.m_config.quietMode and self.m_config.degugMode):
 				im = np.zeros((kTileSize, kTileSize), np.uint8)
 				# im = cv2.CreatMat((kTileSize, kTileSize), cv2.CV_8UC1)
@@ -86,19 +98,18 @@ class LaRank:
 				# cv::Rect roi(rect.XMin(), rect.YMin(), rect.Width(), rect.Height());
 				# cv::resize(sample.GetImage().GetImage(0)(roi), im, im.size());
 
-				sp.images.extend(im)
+				sp.add_image(im)
 
 		# evaluate feature for each sample
-		sp.x.resize(rects.size())
-
+		sp.x.resize(len(rects))		# may not need this resize here, try get value one by one and append/add to list
 		self.m_features.Eval(sample, sp.x)
 		# const_cast<Features&>(m_features).Eval(sample, sp->x);
 
 		sp.y = y
 		sp.refCount = 0
-		m_sps.extend(sp)
+		self.add_sps(sp) # self.m_sps.extend(sp)
 
-		ProcessNew(m_sps.size()-1)
+		ProcessNew(len(self.m_sps)-1)
 		BudgetMaintenance()
 
 		for i in range(10):
@@ -107,7 +118,7 @@ class LaRank:
 
 	def BudgetMaintenance(self):
 		if (self.m_config.svmBudgetSize > 0):
-			while (m_svs.size() > self.m_config.svmBudgetSize):
+			while (len(self.m_svs) > self.m_config.svmBudgetSize):
 				BudgetMaintenanceRemove()
 
 	def Reprocess():
@@ -121,43 +132,44 @@ class LaRank:
 
 
 	def ComputeDual(self):
-		d = 0
-		for i in range(m_svs.size()):
-			sv = m_svs[i]
+		d = 0.0
+		for i in range(len(self.m_svs)):
+			sv = self.m_svs[i]
 			d -= sv.b * Loss(sv.x.yv[sv.y], sv.x.yv[sv.x.y])
-			for j in range(m_svs.size()):
-				d -= 0.5 * sv.b * m_svs[j].b * self.m_K[i, j]
+			for j in range(len(self.m_svs)):
+				d -= 0.5 * sv.b * self.m_svs[j].b * self.m_K[i, j]
 		return d
 
 	# (int ipos, int ineg)
 	def SMOStep(self, ipos, ineg):
 		return if (ipos == ineg)
-		svp = m_svs[ipos]
-		svn = m_svs[ineg]
+		svp = self.m_svs[ipos]
+		svn = self.m_svs[ineg]
 		assert (svp.x == svn.x)
 		sp = svp.x
 
 		# print("SMO: gpos: %d gneg:  " % (svp.g, svp.g))
 		if ((svp->g - svn->g) < 1e-5):
-			print("SMO: skipping")
+			# print("SMO: skipping")
 		else:
 			kii = self.m_K[ipos, ipos] + self.m_K[ineg, ineg] - 2 * self.m_K[ipos, ineg]
 			lu = (svp.g - svn.g) / kii
+			# no need to clamp against 0 since we'd have skipped in that case
 			l = min(lu, self.m_C * (svp.y == sp.y) - svp.b)
 
 			svp.b += l
 			svn.b -= l
 
 			# update gradient
-			for i in range(m_svs.size()):
-				svi = m_svs[i]
+			for i in range(len(self.m_svs)):
+				svi = self.m_svs[i]
 				svi.g -= l * (self.m_K[i, ipos] - self.m_K[i, ineg])
 			# print("SMO: %d, %d -- %d, %d (%d)" % (ipos, ineg, svp.b, svn.b, l))
 
 		# check if we should remove either sv now
 		if (abs(svp.b) < 1e-8):
 			RemoveSupportVector(ipos)
-			if (ineg == m_svs.size()):
+			if (ineg == len(self.m_svs)):
 				# ineg and ipos will have been swapped during sv removal
 				ineg = ipos
 
@@ -166,9 +178,9 @@ class LaRank:
 
 	# (int ind)
 	def MinGradient(self, ind):
-		sp = m_sps[ind]
+		sp = self.m_sps[ind]
 		minGrad = [-1, sys.float_info.max]
-		for i in range(sp.yv.size()):
+		for i in range(len(sp.yv)):
 			grad = -Loss(sp.yv[i], sp.yv[sp.y]) - Evaluate(sp.x[i], sp.yv[i])
 			if (grad < minGrad[1]):
 				minGrad[0] = i
@@ -177,28 +189,28 @@ class LaRank:
 
 	# (int ind)
 	def ProcessNew(self, ind):
-		# gradient is -f(x, y) since loss = 0
-		yp = AddSupportVector(m_sps[ind], m_sps[ind].y, -Evaluate(m_sps[ind].x[m_sps[ind].y],m_sps[ind].yv[m_sps[ind].y]))
+		# gradient is -F(x, y) since loss = 0
+		yp = AddSupportVector(self.m_sps[ind], self.m_sps[ind].y, -Evaluate( self.m_sps[ind].x[ self.m_sps[ind].y ], self.m_sps[ind].yv[ self.m_sps[ind].y ] ))
 
 		minGrad = MinGradient(ind)
-		yn = AddSupportVector(m_sps[ind], minGrad[0], minGrad[1])
+		yn = AddSupportVector(self.m_sps[ind], minGrad[0], minGrad[1])
 
 		SMOStep(yp, yn)
 
 	def ProcessOld(self):
-		return if (m_sps.size() == 0)
+		return if (len(self.m_sps) == 0)
 
 		# choose pattern to process
-		ind = random.randrange(m_sps.size())
+		ind = random.randrange(len(self.m_sps))
 
 		# find existing sv with largest grad and nonzero beta
 		yp = -1
 		maxGrad = -sys.float_info.max
-		for i in range(m_svs.size()):
-			continue if (m_svs[i].x != m_sps[ind])
+		for i in range(len(self.m_svs)):
+			continue if (self.m_svs[i].x != self.m_sps[ind])
 
-			svi = m_svs[i]
-			if (svi.g > maxGrad and svi.b < self.m_C * (svi.y == m_sps[ind].y)):
+			svi = self.m_svs[i]
+			if (svi.g > maxGrad and svi.b < self.m_C * (svi.y == self.m_sps[ind].y)):
 				yp = i
 				maxGrad = svi.g
 
@@ -208,33 +220,33 @@ class LaRank:
 		# find potentially new sv with smallest grad
 		minGrad = MinGradient(ind)
 		yn = -1
-		for i in range(m_svs.size()):
-			continue if (m_svs[i].x != m_sps[ind])
+		for i in range(len(self.m_svs)):
+			continue if (self.m_svs[i].x != self.m_sps[ind])
 
-			if (m_svs[i].y == minGrad[0]):
+			if (self.m_svs[i].y == minGrad[0]):
 				yn = i
 				break
 
 		# add new sv
-		yn = AddSupportVector(m_sps[ind], minGrad[0], minGrad[1]) if (yn == -1)
+		yn = AddSupportVector(self.m_sps[ind], minGrad[0], minGrad[1]) if (yn == -1)
 
 		SMOStep(yp, yn)
 
 	def Optimize(self):
-		return if (m_sps.size() == 0)
+		return if (len(self.m_sps) == 0)
 
 		# choose pattern to optimize
-		ind = random.randrange(m_sps.size())
+		ind = random.randrange(len(self.m_sps))
 
 		yp = -1
 		yn = -1
 		maxGrad = -sys.float_info.max
 		minGrad = sys.float_info.max
-		for i in range(m_svs.size()):
-			continue if (m_svs[i].x != m_sps[ind])
+		for i in range(len(self.m_svs)):
+			continue if (self.m_svs[i].x != self.m_sps[ind])	# search among the support patterns
 
-			svi = m_svs[i]
-			if (svi.g > maxGrad and svi.b < self.m_C * (svi.y == m_sps[ind].y)):
+			svi = self.m_svs[i]
+			if (svi.g > maxGrad and svi.b < self.m_C * (svi.y == self.m_sps[ind].y)):
 				yp = i
 				maxGrad = svi.g
 
@@ -251,104 +263,104 @@ class LaRank:
 		SMOStep(yp, yn)
 
 	def AddSupportVector(self, x, y, g):
-		sv = SupportVector(0, x, y, g) # miss image here	################
+		sv = SupportVector(0.0, x, y, g) 
 		# SupportVector* sv = new SupportVector;
 		# sv->b = 0.0;
 		# sv->x = x;
 		# sv->y = y;
 		# sv->g = g;
 
-		ind = m_svs.size()
-		m_svs.extend(sv)
+		ind = len(self.m_svs)
+		self.add_svs(sv)
 		x.refCount += 1
 
 		# print("Adding SV: ", ind)
 
 		# update kernel matrix
 		for i in range(ind):
-			self.m_K[i, ind] = self.m_kernel.Eval(m_svs[i].x-.x[m_svs[i].y], x.x[y])
+			self.m_K[i, ind] = self.m_kernel.Eval(self.m_svs[i].x.x[ self.m_svs[i].y ], x.x[y])
 			self.m_K[ind, i] = self.m_K[i, ind]
 		
 		self.m_K[ind, ind] = self.m_kernel.Eval(x.x[y])
 		return ind
 
 	def SwapSupportVectors(self, ind1, ind2):
-		tmp = m_svs[ind1];
-		m_svs[ind1] = m_svs[ind2];
-		m_svs[ind2] = tmp;
+		tmp = self.m_svs[ind1];
+		self.m_svs[ind1] = self.m_svs[ind2];
+		self.m_svs[ind2] = tmp;
 		
-		row1 = m_K[ind1, :];
-		m_K[ind1, :] = m_K[ind2, :];
-		m_K[ind2, :] = row1;
+		row1 = self.m_K[ind1, :];
+		self.m_K[ind1, :] = self.m_K[ind2, :];
+		self.m_K[ind2, :] = row1;
 		
-		col1 = m_K[:, ind1];
-		m_K[:, ind1] = m_K[: ind2];
-		m_K[:, ind2] = col1;
+		col1 = self.m_K[:, ind1];
+		self.m_K[:, ind1] = self.m_K[: ind2];
+		self.m_K[:, ind2] = col1;
 
 	def RemoveSupportVector(self, ind):
 		# print("Removing SV: " ind)
 
-		m_svs[ind].x.refCount -= 1
-		if (m_svs[ind].x.refCount == 0):
+		self.m_svs[ind].x.refCount -= 1
+		if (self.m_svs[ind].x.refCount == 0):
 			# also remove support pattern
-			for i in range(m_sps.size()):
-				if (m_sps[i] == m_svs[ind].x):
-					del m_sps[i]
+			for i in range(len(self.m_sps)):
+				if (self.m_sps[i] == self.m_svs[ind].x):
+					del self.m_sps[i]
 					break
 
 		# make sure the support vector is at the back, this lets us keep the kernel matrix cached and valid
-		if (ind < m_svs.size - 1):
-			SwapSupportVectors(ind, m_svs.size()-1)
-			ind = m_svs.size() - 1
-		del m_svs[ind]
-		del m_svs[-1]
+		if (ind < self.m_svs.size - 1):
+			SwapSupportVectors(ind, len(self.m_svs)-1)
+			ind = len(self.m_svs) - 1
+		del self.m_svs[ind]
+		del self.m_svs[-1]
 
 	def BudgetMaintenanceRemove(self):
 		# find negative sv with smallest effect on discriminant function if removed
 		minVal = sys.float_info.max
 		yn = -1
 		yp = -1
-		for i in range(m_svs.size()):
-			if (m_svs[i].b < 0):
+		for i in range(len(self.m_svs)):
+			if (self.m_svs[i].b < 0.0):
 				# find corresponding postive sv
 				j = -1
 
-				for k in range(m_svs.size()):
-					if (m_svs[k].b > 0 and m_svs[k].x == m_svs[i].x):
+				for k in range(len(self.m_svs)):
+					if (self.m_svs[k].b > 0.0 and self.m_svs[k].x == self.m_svs[i].x):
 						j = k
 						break
 				
-				val =m_svs[i].b * m_svs[i].b * (self.m_K[i, i] + self.m_K[j, j] - 2 * self.m_K[i, j])
+				val =self.m_svs[i].b * self.m_svs[i].b * (self.m_K[i, i] + self.m_K[j, j] - 2.0 * self.m_K[i, j])
 				if (val < minVal):
 					minVal = val
 					yn = i
 					yp = j
 
 		# adjust weight of positive sv to compensate for removal of negative
-		m_svs[yp].b += m_svs[yn].b
+		self.m_svs[yp].b += self.m_svs[yn].b
 
 		# remove negative sv
 		RemoveSupportVector(yn)
 		# yp and yn will have been swapped during sv removal
-		yp = yn if (yp == m_svs.size())
+		yp = yn if (yp == len(self.m_svs))
 		# also remove positive sv
-		RemoveSupportVector(yp) if (m_svs[yp].b < 1e-8)
+		RemoveSupportVector(yp) if (self.m_svs[yp].b < 1e-8)
 
 		# update gradients
 		# TODO: this could be made cheaper by just adjusting incrementally rather than recomputing
-		for i in range(m_svs.size()):
-			svi = m_svs[i]
+		for i in range(len(self.m_svs)):
+			svi = self.m_svs[i]
 			svi.g = -Loss(svi.x.yv[svi.y], svi.x.yv[svi.x.y]) - Evaluate(svi.x.x[svi.y], svi.x.yv[svi.y])
 
 	def Debug(self):
-		print("%d/%d support patterns/vectors" % (m_sps.size(), m_svs.size()))
+		print("%d/%d support patterns/vectors" % (len(self.m_sps), (self.m_svs)))
 		UpdateDebugImage()
 		cv2.imshow("learner", self.m_debugImage)
 
 	def UpdateDebugImage(self):
 		# self.m_debugImage.setTo(0)	# already all zero matrix
 		
-		n = m_svs.size()
+		n = len(self.m_svs)
 		return if (n == 0)
 
 		kCanvasSize = 600
@@ -370,20 +382,20 @@ class LaRank:
 		for iset in range(2):
 			for i in range(n):
 				tmp = 1 if (iset == 0) else -1
-				continue if (tmp * m_svs[i].b < 0)
+				continue if (tmp * self.m_svs[i].b < 0.0)
 
-				drawOrder.extend(i)
-				vals[ind] = m_svs[i].b
+				drawOrder.append(i)
+				vals[ind] = self.m_svs[i].b
 				ind += 1
 
 				I = self.m_debugImage[y:y+tileSize, x:x+tileSize] # crop out the region
 				# resize source image to be the same size as temp and store in temp
-				cv2.resize(m_svs[i].x.images[m_svs[i].y], temp.shape, temp)
+				cv2.resize(self.m_svs[i].x.images[self.m_svs[i].y], temp.shape, temp)
 				# convert temp from grayscale to RGB and stores in I
 				cv2.cvtColor(temp, cv2.COLOR_GRAY2RGB, I)
 				# draw rectangle
-				w = 1
-				color = (0, 255*w, 0) if (m_svs[i].b > 0) else (255*w, 0, 0)
+				w = 1.0
+				color = (0, 255*w, 0) if (self.m_svs[i].b > 0.0) else (255*w, 0, 0)
 				cv2.rectangle(I, (0, 0), (tileSize-1, tileSize-1), color, 3)
 
 				x += tileSize
@@ -394,10 +406,12 @@ class LaRank:
 		kKernelPixelSize = 2
 		kernelSize = kKernelPixelSize * n
 
-		# Eigen function !!!!!!!!!!!!!!!!!!!!
-		kmin = self.m_K.minCoeff()
-		kmax = self.m_K.maxCoeff()
-		# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
+		# kmin = self.m_K.minCoeff()
+		kmin = self.m_K.min()
+		# kmax = self.m_K.maxCoeff()
+		kmax = self.m_K.max()
+		
 
 		if (kernelSize < self.m_debugImage.shape(1) and kernelSize < self.m_debugImage.shape(0)):
 			K = self.m_debugImage[(self.m_debugImage.shape(1)-kernelSize) : self.m_debugImage.shape(1), (self.m_debugImage.shape(0)-kernelSize) : self.m_debugImage.shape(0)]
