@@ -6,6 +6,8 @@
 import numpy as np
 
 class Kernel:
+    def __init__(self):
+        pass
     def Eval(x1, x2):
         pass
     def Eval(x):
