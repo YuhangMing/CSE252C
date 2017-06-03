@@ -328,7 +328,8 @@ class LaRank:
 		self.m_K[:, ind2] = col1;
 
 	def RemoveSupportVector(self, ind):
-		# print("Removing SV: " ind)
+		# print("Removing SV: %d" % ind)
+		# print(len(self.m_svs))
 
 		self.m_svs[ind].x.refCount -= 1
 		if (self.m_svs[ind].x.refCount == 0):
@@ -339,11 +340,11 @@ class LaRank:
 					break
 
 		# make sure the support vector is at the back, this lets us keep the kernel matrix cached and valid
-		if (ind < self.m_svs.size - 1):
+		if (ind < len(self.m_svs) - 1):
 			self.SwapSupportVectors(ind, len(self.m_svs)-1)
 			ind = len(self.m_svs) - 1
 		del self.m_svs[ind]
-		del self.m_svs[-1]
+		# del self.m_svs[-1]
 
 	def BudgetMaintenanceRemove(self):
 		# find negative sv with smallest effect on discriminant function if removed
@@ -460,12 +461,11 @@ class LaRank:
 		I = self.m_debugImage[:self.m_debugImage.shape(0)-200, self.m_debugImage.shape(1)-kernelSize:self.m_debugImage.shape(1)-kernelSize+200]
 		I[:] = (255, 255, 255)
 		
-		# GraphUtils.cpp !!!!!!!!!!!!!!!!!!!!
-		# wait to incorporate with GraphUtils later !!!!!!!!!!!!!
-		# II = I
-		# setGraphColor(0);
+		# draw debug images
+		II = I
+		setGraphColor(0);
 		# drawFloatGraph(vals, n, &II, 0.f, 0.f, I.cols, I.rows);
-		# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		drawGraph(vals, n, II, 0.0, 0.0, I.shape[1], I.shape[0]);
 
 
 ###### DEBUG MODE ########
