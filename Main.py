@@ -126,6 +126,7 @@ def main(argv=None):
                         rectangle(result, initBB, WHITE)
             else:
                 print 'Error: do not capture valid video.'
+                return 0
         else:
 
             imgFramePath = conf.sequenceBasePath + '/' + conf.sequenceName + ('/img/%04d.jpg' % int(frameid))
