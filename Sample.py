@@ -28,7 +28,7 @@ class MultiSample:
         return self.m_image
     def GetRects(self):
         return self.m_rects
-    def GetSample(i):
+    def GetSample(self, i):
         return Sample(self.m_image, self.m_rects[i])
     
 
