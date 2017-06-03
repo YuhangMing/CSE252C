@@ -8,18 +8,19 @@ import math
 import cv2 as cv
 import numpy as np
 sys.path.append('./Rect.py')
-import Rect
+from Rect import Rect
 sys.path.append('./Config.py')
-import Config
+from Config import Config
 
 class Sampler:
 
     @staticmethod
+    # consider input "centre" is a Rect
 
     def RadialSamples(centre, radius, nr, nt):
         # fRect = Rect(centre)
-        self.fRect = Rect()
-        self.fRect.initFromList(fRect)
+        fRect = Rect()
+        fRect.initFromRect(centre)
         samples, rstep, tstep = [], float(radius)/nr, 2*float(math.pi)/nt
         samples.append(centre)
         for ir in range(1, nr+1):
@@ -33,7 +34,10 @@ class Sampler:
         return samples
     
     def PixelSamples(centre, radius, halfSample=False):
-        iRect = Rect(centre, isInt=True)
+        # iRect = Rect(centre, isInt=True)    
+        iRect = Rect()
+        iRect.initFromRect(centre)
+        
         samples = []
         samples.append(iRect)
         radius = int(radius)
