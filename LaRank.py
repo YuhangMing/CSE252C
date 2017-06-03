@@ -91,6 +91,7 @@ class LaRank:
 	# (const MultiSample& sample, std::vector<double>& results)
 	def Eval(self, sample, results): 
 		centre = sample.GetRects()[0]
+		fvs = np.zeros((len(sample.GetRects()), 192), np.float32)
 		self.m_features.Eval(sample, fvs)	# Eval function in Features, results in fvs variable
 		results[:] = []
 		for i in range(len(fvs)):
