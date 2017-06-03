@@ -11,6 +11,7 @@ sys.path.append('./Rect.py')
 from Rect import Rect
 sys.path.append('./Config.py')
 from Config import Config
+from copy import deepcopy
 
 class Sampler:
 
@@ -24,7 +25,7 @@ class Sampler:
         fRect = Rect()
         fRect.initFromRect(centre)
         samples, rstep, tstep = [], float(radius)/nr, 2*float(math.pi)/nt
-        samples.append(centre)
+        samples.append(deepcopy(fRect))
         for ir in range(1, nr+1):
             phase = (ir%2)*tstep/2.0
             for it in range(nt):
@@ -32,7 +33,7 @@ class Sampler:
                 dx, dy = ir*rstep*math.cos(theta), ir*rstep*math.sin(theta)
                 fRect.SetXMin(centre.XMin() + dx)
                 fRect.SetYMin(centre.YMin() + dy)
-                samples.append(fRect)
+                samples.append(deepcopy(fRect))
         return samples
     
     # @staticmethod
@@ -42,7 +43,7 @@ class Sampler:
         iRect.initFromRect(centre)
         
         samples = []
-        samples.append(iRect)
+        samples.append(deepcopy(iRect))
         radius = int(radius)
         for iy in range(-radius, radius+1):
             for ix in range(-radius, radius+1):
@@ -54,7 +55,7 @@ class Sampler:
                     continue
                 iRect.SetXMin(int(centre.XMin()+ix))
                 iRect.SetYMin(int(centre.YMin()+iy))
-                samples.append(iRect)
+                samples.append(deepcopy(iRect))
         return samples
         
 
