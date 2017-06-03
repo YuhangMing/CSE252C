@@ -8,44 +8,43 @@ import numpy as np
 class Kernel:
     def __init__(self):
         pass
-    def Eval(self, x1, x2):
-        pass
-    def Eval(self, x):
+    def Eval(self, x1, x2=None):
         pass
     
 class LinearKernel(Kernel):
     def __init__(self):
         pass
-    def Eval(self, x1, x2):
-        return np.dot(x1, x2)
-    def Eval(self, x):
-        return np.linalg.norm(x)
+    def Eval(self, x1, x2=None):
+        if x2 != None:
+            return np.dot(x1, x2)
+        else:
+            return np.linalg.norm(x1)
 
 class GaussianKernel(Kernel):
     def __init__(self, sigma):
         Kernel.__init__(self)
         self.m_sigma = sigma
-    def Eval(self, x1, x2):
-        return np.linalg.norm(np.exp(-self.m_sigma*(x1-x2)))
-    def Eval(self, x):
-        return 1.0
+    def Eval(self, x1, x2=None):
+        if x2 != None:
+            return np.linalg.norm(np.exp(-self.m_sigma*(x1-x2)))
+        else:
+            return 1.0
     
 class IntersectionKernel(Kernel):
     def __init__(self):
         pass
-    def Eval(self, x1, x2):
-        return np.minimum(x1, x2).sum()
-    def Eval(self, x):
-        return np.sum(x)
+    def Eval(self, x1, x2=None):
+        if x2 != None:
+            return np.minimum(x1, x2).sum()
+        else:
+            return np.sum(x1)
 
 #incomplete
 class Chi2Kernel(Kernel):
     def __init__(self):
         pass
-    def Eval(self, x1, x2):
+    def Eval(self, x1, x2=None):
         pass
-    def Eval(self, x):
-        return 1.0
 
 #incomplete    
 class MultiKernel(Kernel):
