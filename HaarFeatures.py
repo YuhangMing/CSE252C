@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 
 sys.path.append('./Config.py')
 from Config import Config
@@ -42,16 +43,31 @@ class HaarFeatures:
 						self.add_feature(new_feature)
 
 	def UpdateFeatureVector(self, sample):
+		self.m_featVec = []
 		for i in range(self.m_featureCount):
 			new_featVec = self.m_features[i].Eval(sample)
-			self.add_featVec(new_featVec)
+			self.m_featVec.append(new_featVec)
+			# self.add_featVec(new_featVec)
+		# print('length of m_featVec: '+str(len(self.m_featVec)))
+		return self.m_featVec
+
 
 	def EvalOne(self, s):
-		self.UpdateFeatureVector(s)
+		return self.UpdateFeatureVector(s)
+
 
 	def Eval(self, s, featVec):
+		# print('# of rects: ' + str(len(s.GetRects())))
 		for i in range(len(s.GetRects())):
-			featVec.append(self.EvalOne(s.GetSample(i)))
+			# print('inside Eval: '+ self.EvalOne(s.GetSample(i)))
+			# featVec[i].append(self.EvalOne(s.GetSample(i)))
+			featVec[i, :] = self.EvalOne(s.GetSample(i))
+		# print(len(featVec))
+		# print(featVec[1])
+
+		# featVec = np.asarray(featVec)
+		# featVec.reshape((len(s.GetRects()), 192))
+
 
 
 
