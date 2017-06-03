@@ -14,10 +14,12 @@ from Config import Config
 
 class Sampler:
 
-    @staticmethod
+    # @staticmethod
     # consider input "centre" is a Rect
+    def __init__(self):
+        pass
 
-    def RadialSamples(centre, radius, nr, nt):
+    def RadialSamples(self, centre, radius, nr, nt):
         # fRect = Rect(centre)
         fRect = Rect()
         fRect.initFromRect(centre)
@@ -33,8 +35,8 @@ class Sampler:
                 samples.append(fRect)
         return samples
     
-    @staticmethod
-    def PixelSamples(centre, radius, halfSample=False):
+    # @staticmethod
+    def PixelSamples(self, centre, radius, halfSample=False):
         # iRect = Rect(centre, isInt=True)    
         iRect = Rect()
         iRect.initFromRect(centre)
