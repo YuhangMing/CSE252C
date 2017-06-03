@@ -25,7 +25,7 @@ class GaussianKernel(Kernel):
         Kernel.__init__(self)
         self.m_sigma = sigma
     def Eval(self, x1, x2=None):
-        if x2 != None:
+        if x2 is not None:
             norm_val = (np.linalg.norm(x1-x2)) ** 2
             # print(-1 * float(self.m_sigma))
             # print(norm_val)
