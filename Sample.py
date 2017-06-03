@@ -14,7 +14,7 @@ from ImageRep import ImageRep
 class Sample:
     def __init__(self, image, roi):
         self.m_image = image
-        self.m_roi = Rect(roi)
+        self.m_roi = roi
     def GetImage(self):
         return self.m_image
     def GetROI(self):
