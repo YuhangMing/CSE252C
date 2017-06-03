@@ -30,7 +30,7 @@ from Sample import MultiSample
 class SupportPattern:
 	# std::vector<Eigen::VectorXd> x; std::vector<FloatRect> yv; std::vector<cv::Mat> images; int y; int refCount;
 	def __init__(self):
-		self.x = []			# eigenVector， value of features
+		self.x = []			# eigenVector, value of features
 		self.yv = []		# floadRect
 		self.images = []	# Mat
 		self.y = 0			# int
@@ -84,6 +84,7 @@ class LaRank:
 		f = 0.0
 		for i in range(len(self.m_svs)):
 			sv = self.m_svs[i]
+			# print(len(x))
 			f += sv.b * self.m_kernel.Eval(x, sv.x.x[sv.y]) # Eval function in kernel class
 		return f
 
@@ -100,6 +101,7 @@ class LaRank:
 
 	# (const MultiSample& sample, int y)
 	def Update(self, sample, y):
+		print('start updating')
 		sp = SupportPattern()
 		rects = sample.GetRects()	# GetRects function in Sample class, should be a list of rects, 4xn
 		center = rects[y]
@@ -121,11 +123,10 @@ class LaRank:
 
 		# evaluate feature for each sample
 		# sp.x.resize(len(rects))		# may not need this resize here, try get value one by one and append/add to list
+		sp.x = np.zeros((len(sample.GetRects()), 192), np.float32)
+		# print(sp.x.shape)
 		self.m_features.Eval(sample, sp.x)	# const_cast<Features&>(m_features).Eval(sample, sp->x);
-		# for i in range(len(rects)):
-		# 	new_x = 
-
-
+		# print(sp.x.shape)
 
 		sp.y = y
 		sp.refCount = 0
@@ -135,6 +136,7 @@ class LaRank:
 		self.BudgetMaintenance()
 
 		for i in range(10):
+			print(i)
 			self.Reprocess()
 			self.BudgetMaintenance()
 
@@ -188,7 +190,8 @@ class LaRank:
 			for i in range(len(self.m_svs)):
 				svi = self.m_svs[i]
 				svi.g -= l * (self.m_K[i, ipos] - self.m_K[i, ineg])
-			# print("SMO: %d, %d -- %d, %d (%d)" % (ipos, ineg, svp.b, svn.b, l))
+			# print("SMO: %d, %d -- %f, %f (%f)" % (ipos, ineg, svp.b, svn.b, l))
+			# print(kii)
 
 		# check if we should remove either sv now
 		if (abs(svp.b) < 1e-8):
@@ -204,8 +207,10 @@ class LaRank:
 	def MinGradient(self, ind):
 		sp = self.m_sps[ind]
 		minGrad = [-1, sys.float_info.max]
-		for i in range(len(sp.yv)):
-			grad = -self.Loss(sp.yv[i], sp.yv[sp.y]) - self.Evaluate(sp.x[i], sp.yv[i])
+		for i in range(1, len(sp.yv)):			# change back to 0 start
+			# print(i)
+			# print(sp.x[i])
+			grad = -1*self.Loss(sp.yv[i], sp.yv[sp.y]) - self.Evaluate(sp.x[i], sp.yv[i])
 			if (grad < minGrad[1]):
 				minGrad[0] = i
 				minGrad[1] = grad
@@ -284,7 +289,8 @@ class LaRank:
 			if (svi.g < minGrad):
 				yn = i
 				minGrad = svi.g
-
+		print(yp)
+		print(yn)
 		assert (yp != -1 and yn != -1)
 		if (yp == -1 or yn == -1):
 			# this should not happen
@@ -492,21 +498,34 @@ if __name__ == '__main__':
 	m_pLearner = LaRank(conf, main_features[-1], main_kernels[-1])
 
 	# update
-	frame = cv2.imread('./0001.jpg')
-	image = ImageRep(frame, 1, 0, 1)
+	BB = [[57, 21, 31, 45], [58, 22, 31, 43], [60, 23, 29, 42], [61, 18, 31, 47], [61, 19, 35, 46],
+		[67, 16, 30, 49], [67, 16, 36, 47], [69, 15, 38, 49], [73, 17, 36, 47], [74, 15, 39, 50]]
+	for i in range(1, 11):
+		print('image %d' % i)
+		frame = cv2.imread('./%04d.jpg' % i)
+		image = ImageRep(frame, True, False, True)
 
-	iniBB = [57, 21, 31, 45]
-	m_bb = Rect()
-	m_bb.initFromList(iniBB)
-	rects = Sampler.RadialSamples(m_bb, 2*conf.searchRadius, 5, 16)
-	keptRects = []
-	keptRects.append(rects[0])
-	for i in range(1, len(rects)):
-		if ( not( rects[i].IsInside(image.GetRect()) ) ): 
-			continue
-		keptRects.append(rects[i]);
-	multi_sample = MultiSample(image, keptRects)
-	m_pLearner.Update(multi_sample, 0);
+		iniBB = BB[i-1]
+		m_bb = Rect()
+		m_bb.initFromList(iniBB)
+		# print(m_bb.XMin(), m_bb.YMin(), m_bb.Width(), m_bb.Height())
+		sampler = Sampler()
+		rects = sampler.RadialSamples(m_bb, 2*conf.searchRadius, 5, 16)
+		keptRects = []
+		keptRects.append(rects[0])
+		# print(rects[0].XMin(), rects[0].YMin(), rects[0].Width(), rects[0].Height())
+		# for j in range(0, len(rects)):
+		# 	print(rects[j].XMin(), rects[j].YMin(), rects[j].Width(), rects[j].Height())
+		for j in range(1, len(rects)):
+			# print(rects[j].XMin(), rects[j].YMin(), rects[j].Width(), rects[j].Height())
+			if ( not( rects[j].IsInside(image.GetRect()) ) ): 
+				# print('not inside')
+				continue
+			keptRects.append(rects[j]);
+			# print('inside')
+		# print('# of inside rects: '+ str(len(keptRects)))
+		multi_sample = MultiSample(image, keptRects)
+		m_pLearner.Update(multi_sample, 0);
 ###### DEBUG MODE ########
 
 
