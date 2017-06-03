@@ -98,7 +98,7 @@ class LaRank:
 			# express y in coord fram of center sample
 			y = sample.GetRects()[i]
 			y.Translate(-centre.XMin(), -centre.YMin())	# functions in Rect
-			results.append(Evaluate(fvs[i], y))
+			results.append(self.Evaluate(fvs[i], y))
 
 	# (const MultiSample& sample, int y)
 	def Update(self, sample, y):
@@ -332,7 +332,7 @@ class LaRank:
 		self.m_K[ind2, :] = row1;
 		
 		col1 = self.m_K[:, ind1];
-		self.m_K[:, ind1] = self.m_K[: ind2];
+		self.m_K[:, ind1] = self.m_K[:, ind2];
 		self.m_K[:, ind2] = col1;
 
 	def RemoveSupportVector(self, ind):
