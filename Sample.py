@@ -13,8 +13,8 @@ from ImageRep import ImageRep
 
 class Sample:
     def __init__(self, image, roi):
-        self.m_image = ImageRep(image)
-        self.m_roi = Rect(roi)
+        self.m_image = image
+        self.m_roi = roi
     def GetImage(self):
         return self.m_image
     def GetROI(self):
@@ -22,13 +22,13 @@ class Sample:
     
 class MultiSample:
     def __init__(self, image, rects):
-        self.m_image = ImageRep(image)
+        self.m_image = image
         self.m_rects = rects
     def GetImage(self):
         return self.m_image
     def GetRects(self):
         return self.m_rects
-    def GetSample(i):
+    def GetSample(self, i):
         return Sample(self.m_image, self.m_rects[i])
     
 
