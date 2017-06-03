@@ -62,14 +62,17 @@ class Tracker:
         img = ImageRep(frame, True, False, False)
         s = Sampler()
         rects = s.PixelSamples(self.bb, self.config.searchRadius)
+        print("sample size %f" % len(rects))
         keptRects = []
         for rect in rects:
             if( rect.isInside(img.GetRect()) ):
                 keptRects.append(rect)
 
+        print("kept %f rects" % len(keptRects)) 
         sample  = MultiSample(img, keptRects)
         scores = []
         self.pLearner.Eval(sample, scores)
+        print("finished evaluation")	
         
         bestScore = max(scores)
         try:
@@ -110,10 +113,13 @@ if __name__ == "__main__":
     while rval:
         cv2.imshow("preview", frame)
         rval, frame = vc.read()
-        if not t.IsInitialized():
-            t.Initialize(frame, initBB)
-        t.Track(frame)
+        frame = cv2.resize(frame, (c.frameWidth, c.frameHeight))
+        if t.IsInitialized():
+            t.Track(frame)
         key = cv2.waitKey(20)
+        if key == 32:
+            t.Initialize(frame, initBB)
+            
         if key == 27: # exit on ESC
             break
     cv2.destroyWindow("preview")
