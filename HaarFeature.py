@@ -70,9 +70,9 @@ class HaarFeature:
         image = sam.GetImage()
         roi = sam.GetROI()
         value = 0.0
-        for i in range(self.m_rects.size()):
+        for i in range(len(self.m_rects)):
             fRect = self.m_rects[i]
-            samRect = Rect(int(roi.XMin()+r.XMin()*roi.Width()+0.5), int(roi.YMin()+r.YMin()*roi.Height()+0.5), int(r.Width()*roi.Width()), int(r.Height()*roi.Height()))
+            samRect = Rect(int(roi.XMin()+fRect.XMin()*roi.Width()+0.5), int(roi.YMin()+fRect.YMin()*roi.Height()+0.5), int(fRect.Width()*roi.Width()), int(fRect.Height()*roi.Height()))
             value += self.m_weights[i]*image.Sum(samRect)
         return value / (self.m_factor*roi.Area()*self.fRect.Area())
 
