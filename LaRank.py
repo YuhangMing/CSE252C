@@ -30,7 +30,7 @@ from Sample import MultiSample
 class SupportPattern:
 	# std::vector<Eigen::VectorXd> x; std::vector<FloatRect> yv; std::vector<cv::Mat> images; int y; int refCount;
 	def __init__(self):
-		self.x = []			# eigenVector
+		self.x = []			# eigenVector， value of features
 		self.yv = []		# floadRect
 		self.images = []	# Mat
 		self.y = 0			# int
