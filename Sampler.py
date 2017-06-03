@@ -7,14 +7,19 @@ import sys
 import math
 import cv2 as cv
 import numpy as np
-sys.path.append('/Users/a_jing/Documents/Courses/CSE 252C/Project/code/Ours/Rect.py')
+sys.path.append('./Rect.py')
 import Rect
-sys.path.append('/Users/a_jing/Documents/Courses/CSE 252C/Project/code/Ours/Config.py')
+sys.path.append('./Config.py')
 import Config
 
 class Sampler:
+
+    @staticmethod
+
     def RadialSamples(centre, radius, nr, nt):
-        fRect = Rect(centre)
+        # fRect = Rect(centre)
+        self.fRect = Rect()
+        self.fRect.initFromList(fRect)
         samples, rstep, tstep = [], float(radius)/nr, 2*float(math.pi)/nt
         samples.append(centre)
         for ir in range(1, nr+1):

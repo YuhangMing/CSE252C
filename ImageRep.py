@@ -11,21 +11,25 @@ from Rect import Rect
 
 kNumBins = 16;
 class ImageRep:
-    def __init__(self, image, computeIntegral, computeIntegralHists, colour):
+    def __init__(self, image, computeIntegral, computeIntegralHist, colour):
         self.m_channels = 3 if colour else 1
         self.m_rect = Rect(0, 0, image.shape[1], image.shape[0])
         self.m_images, self.m_integralImages, self.m_integralHistImages = [],[],[]
         
         for i in range(self.m_channels):
-            self.m_images.append(cv.createMat(image.shape[0], image.shape[1], cv.CV_8UC1))
+            # self.m_images.append(cv.createMat(image.shape[0], image.shape[1], cv.CV_8UC1))
+            self.m_images.append(np.zeros((image.shape[0], image.shape[1]), np.uint8))
             if computeIntegral:
-                self.m_integralImages.append(cv.createMat(image.shape[0]+1, image.shape[1]+1, cv.CV_32SC1))
+                # self.m_integralImages.append(cv.createMat(image.shape[0]+1, image.shape[1]+1, cv.CV_32SC1))
+                self.m_integralImages.append(np.zeros((image.shape[0]+1, image.shape[1]+1), np.float32))
             if computeIntegralHist:
                 for j in range(kNumBins):
-                    self.m_integralHistImages.append(cv.createMat(image.shape[0]+1, image.shape[1]+1, cv.CV_32SC1))
-        
+                    # self.m_integralHistImages.append(cv.createMat(image.shape[0]+1, image.shape[1]+1, cv.CV_32SC1))
+                    self.m_integralHistImages.append(np.zeros((image.shape[0]+1, image.shape[1]+1), np.float32))
+                            
         if colour:
-            assert(image.channels() == 3)
+            # assert(image.channels() == 3)
+            assert(image.shape[2] == 3)
             b, g, r = cv.split(image)
             self.m_images = [b, g, r]
         else:
@@ -41,8 +45,9 @@ class ImageRep:
                 self.m_integralImages[i] = cv.integral(self.m_images[i])
         
         if computeIntegralHist:
-            tmp = cv.createMat(image.shape[0], image.shape[1], cv.CV_8UC1)
-            tmp[:] = 0
+            # tmp = cv.createMat(image.shape[0], image.shape[1], cv.CV_8UC1)
+            # tmp[:] = 0
+            tmp = np.zeros((image.shape[0], image.shape[1]), np.uint8)
             for j in range(kNumBins):
                 for y in range(image.shape[0]):
                     for x in range(image.shape[1]):
