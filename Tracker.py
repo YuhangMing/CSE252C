@@ -60,8 +60,8 @@ class Tracker:
     def Track(self, frame):
         #img = IntegImg(frame)
         img = ImageRep(frame, True, False, False)
-
-        rects = Sampler.PixelSamples(self.bb, self.config.searchRadius)
+        s = Sampler()
+        rects = s.PixelSamples(self.bb, self.config.searchRadius)
         keptRects = []
         for rect in rects:
             if( rect.isInside(img.GetRect()) ):
@@ -79,10 +79,11 @@ class Tracker:
 
         if not bestIndex == -1:
             self.bb = keptRects[bestIndex]
-            UpdateLearner(img)
+            self.UpdateLearner(img)
 
     def UpdateLearner(self, img):
-        rects = Sampler.RadialSamples(self.bb, 2*self.config.searchRadius, 5, 16)
+        s = Sampler()
+        rects = s.RadialSamples(self.bb, 2*self.config.searchRadius, 5, 16)
         keptRects = []
         keptRects.append(rects[0])
         for i, rect in enumerate(rects):
