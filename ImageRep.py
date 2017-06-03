@@ -28,7 +28,10 @@ class ImageRep:
                     # self.m_integralHistImages.append(cv.createMat(image.shape[0]+1, image.shape[1]+1, cv.CV_32SC1))
                     self.m_integralHistImages.append(np.zeros((image.shape[0]+1, image.shape[1]+1), np.float32))
                             
-        channels = image.shape[2]
+        if len(image.shape) == 2:
+            channels = 1
+        else:
+            channels = 3
         if colour:
             # assert(image.channels() == 3)
             assert(channels == 3)
@@ -39,7 +42,7 @@ class ImageRep:
             assert(channels == 3 or channels == 1)
             if channels == 3:
                 self.m_images[0] = cv.cvtColor(image, cv.COLOR_RGB2GRAY)
-            elif channels() == 1:
+            elif channels == 1:
                 np.copyto(self.m_images[0], image)
         
         if computeIntegral:
