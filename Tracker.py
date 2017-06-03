@@ -2,32 +2,34 @@
 import numpy as np
 import cv2
 
-import Config
-import ImageRep
-import Sampler
-import Sample
-import HaarFeatures
+from Rect import Rect
+from Config import Config
+from ImageRep import ImageRep
+from Sampler import Sampler
+from Sample import Sample
+from Sample import MultiSample
+from HaarFeatures import HaarFeatures
 import Kernels
-import LaRank
+from LaRank import LaRank
 
 class Tracker:
     def __init__(self, config):
         self.config = config
         self.Reset()
  
-    def Initialize(self, frame, rect);
+    def Initialize(self, frame, rect):
         r = Rect()
-        self.bb = r.initializeFromRect(rect)
+        self.bb = r.initFromRect(rect)
         #image = IntegImg(frame) # orImgRep
-        img = ImageRep(frame)
+        img = ImageRep(frame, True, False, False)
         self.UpdateLearner(img)
-        self.initialised = True
+        self.initialized = True
 
     def IsInitialized(self):
-        return self.initilised
+        return self.initialized
          
     def GetBox(self):
-        return self.box
+        return self.bb
 
     def Reset(self):
         self.initialized = False
@@ -38,24 +40,26 @@ class Tracker:
         self.kernels = []
         featureCounts = []
         for feat in self.config.features:
+            # TODO uncomment this once HaarFeatures is ready
             self.features.append(HaarFeatures(self.config))
             featureCounts.append(self.features[-1].GetCount())
-            kerType = feat.kernel
-            if kerType == Config.kKernelTypeLinear:
-                self.kernels.append(LinearKernel())
-            elif kerType == Config.kKernelTypeGaussian:
-                self.kernels.append(GaussianKernel())
-            elif kerType == Config.kKernelTypeIntersection:
-                self.kernels.append(IntersectionKernel())
-            elif kerType == Config.kKernelTypeChi2:
-                self.kernels.append(Chi2Kernel())
+            kerType = feat.kernelName
+            if kerType == 'linear':
+                self.kernels.append(Kernels.LinearKernel())
+            elif kerType == 'gaussian':
+                self.kernels.append(Kernels.GaussianKernel(feat.params[0]))
+            elif kerType == 'intersection':
+                self.kernels.append(Kernels.IntersectionKernel())
+            elif kerType == 'chi2':
+                self.kernels.append(Kernels.Chi2Kernel())
             # this should run for 1 iteration since we only use Haar Feature
+
         self.pLearner = LaRank(self.config, self.features[-1], self.kernels[-1])
         
 
     def Track(self, frame):
         #img = IntegImg(frame)
-        img = ImageRep(frame)
+        img = ImageRep(frame, True, False, False)
 
         rects = Sampler.PixelSamples(self.bb, self.config.searchRadius)
         keptRects = []
@@ -78,13 +82,39 @@ class Tracker:
             UpdateLearner(img)
 
     def UpdateLearner(self, img):
-        rects = Sampler.RadialSamples(self.bb, 2, self.config.searchRadius, 5, 16)
+        rects = Sampler.RadialSamples(self.bb, 2*self.config.searchRadius, 5, 16)
         keptRects = []
         keptRects.append(rects[0])
         for i, rect in enumerate(rects):
             if i < 1:
                 continue
-            if rect[i].IsInside(img.GetRect() :
+            if rect.IsInside(img.GetRect()) :
                 keptRects.append(rect)
         sample = MultiSample(img, keptRects)
         self.pLearner.Update(sample, 0)
+
+if __name__ == "__main__":
+    c = Config("./config.txt")
+    t = Tracker(c)
+    cv2.namedWindow("preview")
+    vc = cv2.VideoCapture(0)
+
+    if vc.isOpened(): # try to get the first frame
+        rval, frame = vc.read()
+    else:
+        rval = False
+    
+    initBB = Rect(100, 100, 80, 80)
+
+    while rval:
+        cv2.imshow("preview", frame)
+        rval, frame = vc.read()
+        if not t.IsInitialized():
+            t.Initialize(frame, initBB)
+        t.Track(frame)
+        key = cv2.waitKey(20)
+        if key == 27: # exit on ESC
+            break
+    cv2.destroyWindow("preview")
+    
+    
