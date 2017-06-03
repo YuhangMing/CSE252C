@@ -173,7 +173,8 @@ class LaRank:
 
 		# print("SMO: gpos: %d gneg:  " % (svp.g, svp.g))
 		if ((svp.g - svn.g) < 1e-5):
-			print("SMO: skipping")
+			# print("SMO: skipping")
+			pass
 		else:
 			kii = self.m_K[ipos, ipos] + self.m_K[ineg, ineg] - 2 * self.m_K[ipos, ineg]
 			lu = (svp.g - svn.g) / kii
