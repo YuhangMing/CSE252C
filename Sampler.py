@@ -33,6 +33,7 @@ class Sampler:
                 samples.append(fRect)
         return samples
     
+    @staticmethod
     def PixelSamples(centre, radius, halfSample=False):
         # iRect = Rect(centre, isInt=True)    
         iRect = Rect()
