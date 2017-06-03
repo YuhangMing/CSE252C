@@ -26,8 +26,14 @@ class GaussianKernel(Kernel):
         self.m_sigma = sigma
     def Eval(self, x1, x2=None):
         if x2 != None:
-            inner = map(lambda d: -1*float(self.m_sigma)*d, (x1-x2))
-            return np.linalg.norm(np.exp(inner))
+            norm_val = (np.linalg.norm(x1-x2)) ** 2
+            # print(-1 * float(self.m_sigma))
+            # print(norm_val)
+            # print(-1 * float(self.m_sigma) * norm_val)
+            # print(np.exp(-1 * float(self.m_sigma) * norm_val))
+            return np.exp(-1 * float(self.m_sigma) * norm_val)
+            # inner = map(lambda d: -1*float(self.m_sigma)*d, (x1-x2))
+            # return np.exp(np.linalg.norm(inner))
         else:
             return 1.0
     
