@@ -14,6 +14,7 @@ class ImageRep:
     def __init__(self, image, computeIntegral=True, computeIntegralHist=False, colour=False):
         self.m_channels = 3 if colour else 1
         self.m_rect = Rect(0, 0, image.shape[1], image.shape[0])
+        # print(self.m_rect.XMin())
         self.m_images, self.m_integralImages, self.m_integralHistImages = [],[],[]
         
         for i in range(self.m_channels):
