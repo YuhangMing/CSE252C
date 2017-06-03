@@ -18,6 +18,15 @@ from Rect import Rect
 sys.path.append('./GraphUtils.py')
 import GraphUtils
 
+###### DEBUG MODE ########
+sys.path.append('./ImageRep.py')
+from ImageRep import ImageRep
+sys.path.append('./Sampler.py')
+from Sampler import Sampler
+sys.path.append('./Sample.py')
+from Sample import MultiSample
+###### DEBUG MODE ########
+
 class SupportPattern:
 	# std::vector<Eigen::VectorXd> x; std::vector<FloatRect> yv; std::vector<cv::Mat> images; int y; int refCount;
 	def __init__(self):
@@ -111,9 +120,12 @@ class LaRank:
 				sp.add_image(im)
 
 		# evaluate feature for each sample
-		sp.x.resize(len(rects))		# may not need this resize here, try get value one by one and append/add to list
-		self.m_features.Eval(sample, sp.x)
-		# const_cast<Features&>(m_features).Eval(sample, sp->x);
+		# sp.x.resize(len(rects))		# may not need this resize here, try get value one by one and append/add to list
+		self.m_features.Eval(sample, sp.x)	# const_cast<Features&>(m_features).Eval(sample, sp->x);
+		# for i in range(len(rects)):
+		# 	new_x = 
+
+
 
 		sp.y = y
 		sp.refCount = 0
@@ -281,11 +293,11 @@ class LaRank:
 		self.SMOStep(yp, yn)
 
 	def AddSupportVector(self, x, y, g):
-		sv = SupportVector(0.0, x, y, g) 
+		sv = SupportVector(x, y, 0.0, g) 
 		# SupportVector* sv = new SupportVector;
-		# sv->b = 0.0;
 		# sv->x = x;
 		# sv->y = y;
+		# sv->b = 0.0;
 		# sv->g = g;
 
 		ind = len(self.m_svs)
@@ -299,7 +311,7 @@ class LaRank:
 			self.m_K[i, ind] = self.m_kernel.Eval(self.m_svs[i].x.x[ self.m_svs[i].y ], x.x[y])
 			self.m_K[ind, i] = self.m_K[i, ind]
 		
-		self.m_K[ind, ind] = self.m_kernel.Eval(x.x[y])
+		self.m_K[ind, ind] = self.m_kernel.Eval( x.x[y] )
 		return ind
 
 	def SwapSupportVectors(self, ind1, ind2):
@@ -475,8 +487,25 @@ if __name__ == '__main__':
 		main_featureCount.append(main_features[-1].GetCount())
 
 	# debug LaRank
+	# initialize
 	m_pLearner = LaRank(conf, main_features[-1], main_kernels[-1])
 
+	# update
+	frame = cv2.imread('./0001.jpg')
+	image = ImageRep(frame, 1, 0, 1)
+
+	iniBB = [57, 21, 31, 45]
+	m_bb = Rect()
+	m_bb.initFromList(iniBB)
+	rects = Sampler.RadialSamples(m_bb, 2*conf.searchRadius, 5, 16)
+	keptRects = []
+	keptRects.append(rects[0])
+	for i in range(1, len(rects)):
+		if ( not( rects[i].IsInside(image.GetRect()) ) ): 
+			continue
+		keptRects.append(rects[i]);
+	multi_sample = MultiSample(image, keptRects)
+	m_pLearner.Update(multi_sample, 0);
 ###### DEBUG MODE ########
 
 

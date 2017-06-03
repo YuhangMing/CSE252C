@@ -42,9 +42,16 @@ class HaarFeatures:
 						self.add_feature(new_feature)
 
 	def UpdateFeatureVector(self, sample):
-		for i in range(m_featureCount):
-			new_featVec = m_features[i].Eval(sample)
+		for i in range(self.m_featureCount):
+			new_featVec = self.m_features[i].Eval(sample)
 			self.add_featVec(new_featVec)
+
+	def EvalOne(self, s):
+		self.UpdateFeatureVector(s)
+
+	def Eval(self, s, featVec):
+		for i in range(len(s.GetRects())):
+			featVec.append(self.EvalOne(s.GetSample(i)))
 
 
 
