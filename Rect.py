@@ -14,7 +14,7 @@ class Rect:
     ######################################
 
     def printStr(self):
-        print '%d %d %d %d/n' %(self.x, self.y, self.width, self.height)
+        print '%d %d %d %d\n' %(self.x, self.y, self.width, self.height)
   
     # Getters
     def getX(self):
