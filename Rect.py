@@ -12,6 +12,9 @@ class Rect:
         self.set(l[0], l[1], l[2], l[3])
         return self
     ######################################
+
+    def printStr(self):
+        print '%f %f %f %f/n' %(self.x, self.y, self.width, self.height)
   
     # Getters
     def getX(self):
