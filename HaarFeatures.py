@@ -66,6 +66,10 @@ class HaarFeatures:
 				new_featVec = self.m_features[i].Eval(s.GetSample(j))
 				self.m_featVec.append(new_featVec)
 			featVec[j, :] = self.m_featVec
+			print("in haarfeatures.Eval, j = : ", j)
+			print(featVec[j, :])
+			print("")
+
 
 
 

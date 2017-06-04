@@ -101,27 +101,59 @@ if __name__ == "__main__":
     c = Config("./config.txt")
     t = Tracker(c)
     cv2.namedWindow("preview")
-    vc = cv2.VideoCapture(0)
+    # vc = cv2.VideoCapture(0)
 
-    if vc.isOpened(): # try to get the first frame
-        rval, frame = vc.read()
-    else:
-        rval = False
-    
-    initBB = Rect(100, 100, 80, 80)
+    # if vc.isOpened(): # try to get the first frame
+    #     rval, frame = vc.read()
+    # else:
+    #     rval = False
 
-    while rval:
-        cv2.imshow("preview", frame)
-        rval, frame = vc.read()
-        frame = cv2.resize(frame, (c.frameWidth, c.frameHeight))
-        if t.IsInitialized():
-            t.Track(frame)
-        key = cv2.waitKey(20)
-        if key == 32:
-            t.Initialize(frame, initBB)
+    # initBB = Rect(100, 100, 80, 80)
+
+    # while rval:
+    #     cv2.imshow("preview", frame)
+    #     rval, frame = vc.read()
+    #     frame = cv2.resize(frame, (c.frameWidth, c.frameHeight))
+    #     if t.IsInitialized():
+    #         t.Track(frame)
+    #     key = cv2.waitKey(20)
+    #     if key == 32:
+    #         t.Initialize(frame, initBB)
             
-        if key == 27: # exit on ESC
-            break
+    #     if key == 27: # exit on ESC
+    #         break
+    # cv2.destroyWindow("preview")
+
+    ## Yohann
+    initBB = Rect(57, 21, 31, 45)
+    for i in range(1, 501):
+        frame = cv2.imread('./img/%04d.jpg' % i)
+        print(i)
+        # print((c.frameWidth, c.frameHeight))
+        frame = cv2.resize(frame, (c.frameWidth, c.frameHeight))
+        # cv2.imshow("preview", frame)
+        if t.IsInitialized():
+            newBB = t.GetBox()
+            pt1 = (newBB.XMin(), newBB.YMin())
+            pt2 = (newBB.XMax(), newBB.YMax())
+            cv2.rectangle(frame, pt1, pt2, (0, 0, 255))
+            cv2.imshow("preview", frame)
+            t.Track(frame)
+        else:
+            pt1 = (initBB.XMin(), initBB.YMin())
+            pt2 = (initBB.XMax(), initBB.YMax())
+            cv2.rectangle(frame, pt1, pt2, (0, 0, 255))
+            cv2.imshow("preview", frame)
+            t.Initialize(frame, initBB)
+        uBB = t.GetBox()
+        print(uBB.XMin(), uBB.YMin(), uBB.Width(), uBB.Height())
+        # t.Initialize(frame, initBB)
+        key = cv2.waitKey(20)
+            
+            
+        # if key == 27: # exit on ESC
+        #     break   
+    # cv2.waitKey(0)
     cv2.destroyWindow("preview")
     
     
