@@ -22,6 +22,8 @@ class Tracker:
         self.bb = r.initFromRect(rect)
         #image = IntegImg(frame) # orImgRep
         img = ImageRep(frame, True, False, False)
+        print("integral Image")
+        print(img)
         self.UpdateLearner(img)
         self.initialized = True
 
@@ -100,7 +102,9 @@ class Tracker:
 if __name__ == "__main__":
     c = Config("./config.txt")
     t = Tracker(c)
+
     cv2.namedWindow("preview")
+    # cv2.namedWindow("test")
     # vc = cv2.VideoCapture(0)
 
     # if vc.isOpened(): # try to get the first frame
@@ -124,28 +128,34 @@ if __name__ == "__main__":
     #         break
     # cv2.destroyWindow("preview")
 
-    ## Yohann
-    # tmp = cv2.imread('./img/%04d.jpg' % 1)
-    # scaleW = conf.frameWidth/tmp.cols;
-    initBB = Rect(57, 21, 31, 45)
+    tmp = cv2.imread('./data/Girl/img/%04d.jpg' % 1)
+    scaleW = float(c.frameWidth) / tmp.shape[1]
+    scaleH = float(c.frameHeight) / tmp.shape[0]
+    initBB = Rect(int(57 * scaleW), int(21 * scaleH), int(31 * scaleW), int(45 * scaleH))
+    initBB.printStr()
     for i in range(1, 501):
-        frame = cv2.imread('./img/%04d.jpg' % i)
+        frame = cv2.imread('./data/Girl/img/%04d.jpg' % i, 0)
         print(i)
         # print((c.frameWidth, c.frameHeight))
+        # cv2.imshow("test", frame)
         frame = cv2.resize(frame, (c.frameWidth, c.frameHeight))
+        result = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
         # cv2.imshow("preview", frame)
         if t.IsInitialized():
+            t.Track(frame)
             newBB = t.GetBox()
             pt1 = (newBB.XMin(), newBB.YMin())
             pt2 = (newBB.XMax(), newBB.YMax())
-            cv2.rectangle(frame, pt1, pt2, (0, 0, 255))
-            cv2.imshow("preview", frame)
-            t.Track(frame)
+            # cv2.rectangle(frame, pt1, pt2, (0, 0, 255))
+            cv2.rectangle(result, pt1, pt2, (0, 0, 255))
+            cv2.imshow("preview", result)
+            # t.Track(frame)
         else:
             pt1 = (initBB.XMin(), initBB.YMin())
             pt2 = (initBB.XMax(), initBB.YMax())
-            cv2.rectangle(frame, pt1, pt2, (0, 0, 255))
-            cv2.imshow("preview", frame)
+            # cv2.rectangle(frame, pt1, pt2, (0, 0, 255))
+            cv2.rectangle(result, pt1, pt2, (0, 0, 255))
+            cv2.imshow("preview", result)
             t.Initialize(frame, initBB)
         uBB = t.GetBox()
         print(uBB.XMin(), uBB.YMin(), uBB.Width(), uBB.Height())
