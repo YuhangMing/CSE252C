@@ -29,9 +29,9 @@ class Config:
                     if words[0] == 'seed':
                         self.seed = int(words[2])
                     elif words[0] == 'quietMode':
-                        self.quietMode = words[2]
+                        self.quietMode = int(words[2])
                     elif words[0] == 'debugMode':
-                        self.debugMode = words[2]
+                        self.debugMode = int(words[2])
                     elif words[0] == 'sequenceBasePath':
                         self.sequenceBasePath = words[2]
                     elif words[0] == 'sequenceName':
