@@ -94,13 +94,16 @@ class LaRank:
 
 	# (const MultiSample& sample, std::vector<double>& results)
 	def Eval(self, sample, results): 
-		centre = sample.GetRects()[0]
+		centre = Rect()
+		centre.initFromRect(sample.GetRects()[0])
 		fvs = np.zeros((len(sample.GetRects()), 192), np.float32)
 		self.m_features.Eval(sample, fvs)	# Eval function in Features, results in fvs variable
 		results[:] = []
 		for i in range(len(fvs)):
 			# express y in coord fram of center sample
-			y = sample.GetRects()[i]
+
+			y = Rect()
+			y.initFromRect( sample.GetRects()[i] )
 			y.Translate(-centre.XMin(), -centre.YMin())	# functions in Rect
 			results.append(self.Evaluate(fvs[i], y))
 
@@ -109,15 +112,18 @@ class LaRank:
 		print('start updating')
 		sp = SupportPattern()
 		rects = sample.GetRects()	# GetRects function in Sample class, should be a list of rects, 4xn
-		center = rects[y]
+		center = Rect()
+		center.initFromRect(rects[y])
 		for i in range(len(rects)):
-			r = rects[i]
+			r = Rect()
+			r.initFromRect(rects[i])
 			r.Translate(-center.XMin(), -center.YMin())	# Translate function in Rect class
 			sp.add_yv(r)
 			if (not(self.m_config.quietMode) and self.m_config.debugMode):
 				im = np.zeros((kTileSize, kTileSize), np.uint8)
 				# im = cv2.CreatMat((kTileSize, kTileSize), cv2.CV_8UC1)
-				rect = rects[i]
+				rect = Rect()
+				rect.initFromRect(rects[i])
 
 				roi = [rect.XMin(), rect.XMin()+rect.Width(), rect.YMin(), rect.YMin()+rect.Height()] #[xmin, xmax, ymin, ymax]
 				cv2.resize(sample.GetImage().GetImage(0)[int(roi[2]):int(roi[3]), int(roi[0]):int(roi[1])], im.shape, im)
