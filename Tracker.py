@@ -125,8 +125,8 @@ if __name__ == "__main__":
     # cv2.destroyWindow("preview")
 
     ## Yohann
-    tmp = cv2.imread('./img/%04d.jpg' % 1)
-    scaleW = conf.frameWidth/tmp.cols;
+    # tmp = cv2.imread('./img/%04d.jpg' % 1)
+    # scaleW = conf.frameWidth/tmp.cols;
     initBB = Rect(57, 21, 31, 45)
     for i in range(1, 501):
         frame = cv2.imread('./img/%04d.jpg' % i)

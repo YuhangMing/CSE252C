@@ -129,15 +129,16 @@ class LaRank:
 		# evaluate feature for each sample
 		# sp.x.resize(len(rects))		# may not need this resize here, try get value one by one and append/add to list
 		sp.x = np.zeros((len(sample.GetRects()), 192), np.float32)
+		
 		# Print some vals ##################
-		print("LaRank.Update, entering haarfeatures.Eval: ")
+		# print("LaRank.Update, entering haarfeatures.Eval: ")
 		####################################
 
 		self.m_features.Eval(sample, sp.x)	# const_cast<Features&>(m_features).Eval(sample, sp->x);
 
 		# Print some vals ##################
-		print("before precess new")
-		print(sp.x[0])
+		# print("before precess new")
+		# print(sp.x[0])
 		####################################
 
 		sp.y = y
@@ -146,8 +147,8 @@ class LaRank:
 		# self.m_sps.extend(sp)
 
 		self.ProcessNew( len(self.m_sps)-1 )
-		print("after process new: ")
-		print(self.m_K)	
+		# print("after process new: ")
+		# print(self.m_K)	
 		self.BudgetMaintenance()
 
 		for i in range(10):
@@ -364,11 +365,11 @@ class LaRank:
 		for i in range(ind):
 			##########################################
 			### PROBLEM HERE #########################
-			print("x1: ")
-			print(self.m_svs[i].x.x[ self.m_svs[i].y ])
-			print("x2: ")
-			print(x.x[y])
-			print("")
+			# print("x1: ")
+			# print(self.m_svs[i].x.x[ self.m_svs[i].y ])
+			# print("x2: ")
+			# print(x.x[y])
+			# print("")
 			##########################################
 			self.m_K[i, ind] = self.m_kernel.Eval(self.m_svs[i].x.x[ self.m_svs[i].y ], x.x[y])
 			self.m_K[ind, i] = self.m_K[i, ind]
