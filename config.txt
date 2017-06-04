@@ -17,10 +17,8 @@ sequenceName = Girl
 
 # frame size for use during tracking.
 # the input image will be scaled to this size.
-#frameWidth = 320
-#frameHeight = 240
-frameWidth = 128
-frameHeight = 96
+frameWidth = 320
+frameHeight = 240
 
 # seed for random number generator.
 seed = 0

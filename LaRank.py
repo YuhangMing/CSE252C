@@ -54,10 +54,13 @@ class SupportVector:
 		self.g = g 			# double, value of the gradient(mini)
 		self.image = image 	# Mat
 
+kMaxSVs = 2000
+kTileSize = 30
+
 class LaRank:
 
-	kMaxSVs = 2000
-	kTileSize = 30
+	# kMaxSVs = 2000
+	# kTileSize = 30
 	
 	# m_sps = []	# SupportPattern vector/list
 	# m_svs = []	# SupportVector vector/list
@@ -117,7 +120,7 @@ class LaRank:
 				rect = rects[i]
 
 				roi = [rect.XMin(), rect.XMin()+rect.Width(), rect.YMin(), rect.YMin()+rect.Height()] #[xmin, xmax, ymin, ymax]
-				cv2.resize(sample.GetImage().GetImage(0)[roi[2]:roi[3], roi[0]:roi[1]], im.shape, im)
+				cv2.resize(sample.GetImage().GetImage(0)[int(roi[2]):int(roi[3]), int(roi[0]):int(roi[1])], im.shape, im)
 				# cv::Rect roi(rect.XMin(), rect.YMin(), rect.Width(), rect.Height());
 				# cv::resize(sample.GetImage().GetImage(0)(roi), im, im.size());
 
