@@ -41,7 +41,7 @@ class IntersectionKernel(Kernel):
     def __init__(self):
         pass
     def Eval(self, x1, x2=None):
-        if x2 != None:
+        if x2 is not None:
             return np.minimum(x1, x2).sum()
         else:
             return np.sum(x1)
