@@ -113,9 +113,10 @@ def main(argv=None):
         print 'Error: no features specified in config'
         return 0
 
-    if isFile(conf.resultsPath, 'res') is False:
+    resultsPath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + '/' + conf.resultsPath
+    if isFile(resultsPath, 'res') is False:
         return 0
-    fres = open(conf.resultsPath, 'w')
+    fres = open(resultsPath, 'w')
 
     useCamera = (conf.sequenceName == '')
 
@@ -173,8 +174,9 @@ def main(argv=None):
             tracker.Track(frame)
             # if !conf.quietMode and conf.debugMode:
             #     tracker.Debug()
-            rectangle(result, tracker.GetBox(), GREEN)
+            
             box = tracker.GetBox()
+            rectangle(result, box, GREEN)
             fRect = Rect(box.XMin() / scaleW, box.YMin() / scaleH, box.Width() / scaleW, box.Height() / scaleH)
             fres.write('%d %d %d %d' % (fRect.XMin(), fRect.YMin(), fRect.Width(), fRect.Height()))
             if not useCamera:
