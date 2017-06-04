@@ -111,7 +111,7 @@ class LaRank:
 			r = rects[i]
 			r.Translate(-center.XMin(), -center.YMin())	# Translate function in Rect class
 			sp.add_yv(r)
-			if (not(self.m_config.quietMode) and self.m_config.degugMode):
+			if (not(self.m_config.quietMode) and self.m_config.debugMode):
 				im = np.zeros((kTileSize, kTileSize), np.uint8)
 				# im = cv2.CreatMat((kTileSize, kTileSize), cv2.CV_8UC1)
 				rect = rects[i]
@@ -126,14 +126,25 @@ class LaRank:
 		# evaluate feature for each sample
 		# sp.x.resize(len(rects))		# may not need this resize here, try get value one by one and append/add to list
 		sp.x = np.zeros((len(sample.GetRects()), 192), np.float32)
+		# Print some vals ##################
+		print("LaRank.Update, entering haarfeatures.Eval: ")
+		####################################
+
 		self.m_features.Eval(sample, sp.x)	# const_cast<Features&>(m_features).Eval(sample, sp->x);
-		
+
+		# Print some vals ##################
+		print("before precess new")
+		print(sp.x[0])
+		####################################
+
 		sp.y = y
 		sp.refCount = 0
 		self.add_sps(sp)
 		# self.m_sps.extend(sp)
 
 		self.ProcessNew( len(self.m_sps)-1 )
+		print("after process new: ")
+		print(self.m_K)	
 		self.BudgetMaintenance()
 
 		for i in range(10):
@@ -145,7 +156,7 @@ class LaRank:
 		# print('In Update:')
 		# # print(sp.x)			# looks good
 		# print(len(self.m_svs))
-		# # print(self.m_K)		# value wrong here !!!!!!!!!!!!!!!!!!!!
+		# print(self.m_K)		# value wrong here !!!!!!!!!!!!!!!!!!!!
 		# print("end Update")
 
 	def BudgetMaintenance(self):
@@ -234,6 +245,7 @@ class LaRank:
 	# (int ind)
 	def ProcessNew(self, ind):
 		# gradient is -F(x, y) since loss = 0
+		print("process new ind = ", ind)
 		yp = self.AddSupportVector(self.m_sps[ind], self.m_sps[ind].y, -self.Evaluate( self.m_sps[ind].x[ self.m_sps[ind].y ], self.m_sps[ind].yv[ self.m_sps[ind].y ] ))
 
 		minGrad = self.MinGradient(ind)
@@ -342,14 +354,21 @@ class LaRank:
 		# self.m_svs.append(sv)
 		x.refCount += 1
 
-		# print("Adding SV: ", ind)
+		print("Adding SV: ", ind)
 		# print('y = %d, g = %f' % (y, g))
 
 		# update kernel matrix
 		for i in range(ind):
+			##########################################
+			### PROBLEM HERE #########################
+			print("x1: ")
+			print(self.m_svs[i].x.x[ self.m_svs[i].y ])
+			print("x2: ")
+			print(x.x[y])
+			print("")
+			##########################################
 			self.m_K[i, ind] = self.m_kernel.Eval(self.m_svs[i].x.x[ self.m_svs[i].y ], x.x[y])
 			self.m_K[ind, i] = self.m_K[i, ind]
-			# print('m_K[i, ind] = ', self.m_K[i, ind])
 		
 		self.m_K[ind, ind] = self.m_kernel.Eval( x.x[y] )
 		return ind
