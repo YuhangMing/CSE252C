@@ -183,7 +183,7 @@ def main(argv=None):
                 print 'true Rect: ',
                 tRect.printStr()
                 print 'tracker Rect: ',
-                box.printStr()
+                fRect.printStr()
                 print 'overlap: %.2f' % overlap
                 count, totalOverlap = count + 1, totalOverlap + overlap
                 fres.write(' %.2f' % overlap)
