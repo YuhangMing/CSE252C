@@ -88,7 +88,7 @@ def setFrame(conf):
     words = filter(None, line.split())
     if len(words) != 4:
         print 'Error: do not get the correct rect params.'
-        return startFrame, endFrame, scaleW, scaleH, False
+        return startFrame, endFrame, scaleW, scaleH, initBB, False
     xmin, ymin, width, height = float(words[0]), float(words[1]), float(words[2]), float(words[3])
     initBB = Rect(xmin * scaleW, ymin * scaleH,width * scaleW, height * scaleH)
     return startFrame, endFrame, scaleW, scaleH, initBB, True
@@ -178,7 +178,7 @@ def main(argv=None):
             box = tracker.GetBox()
             rectangle(result, box, GREEN)
             fRect = Rect(box.XMin() / scaleW, box.YMin() / scaleH, box.Width() / scaleW, box.Height() / scaleH)
-            fres.write('%d %d %d %d' % (fRect.XMin(), fRect.YMin(), fRect.Width(), fRect.Height()))
+            fres.write('%.2f %.2f %.2f %.2f' % (fRect.XMin(), fRect.YMin(), fRect.Width(), fRect.Height()))
             if not useCamera:
                 tRect = getTrueRect(rectFilePath, frameid)
                 overlap = float(tRect.Overlap(fRect))
