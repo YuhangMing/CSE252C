@@ -55,6 +55,11 @@ def setCamera(conf):
         return startFrame, endFrame, scaleW, scaleH, cap, initBB, False
     return startFrame, endFrame, scaleW, scaleH, cap, initBB, True
 
+def getTrueRect(rectFilePath, lineid):
+    line = linecache.getline(rectFilePath, lineid)
+    words = filter(None, line.split(','))
+    tRect = Rect(float(words[0]), float(words[1]), float(words[2]), float(words[3]))
+    return tRect
 
 def setFrame(conf):
     startFrame, endFrame, scaleW, scaleH, initBB = 0, MAXINT, 1.0, 1.0, Rect()
@@ -83,21 +88,10 @@ def setFrame(conf):
     rectFilePath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + '/groundtruth_rect.txt'
     if isFile(rectFilePath, 'rect') is False:
         return startFrame, endFrame, scaleW, scaleH, initBB, False
-    frect = open(rectFilePath, 'r')
-    line = frect.readline()
-    words = filter(None, line.split())
-    if len(words) != 4:
-        print 'Error: do not get the correct rect params.'
-        return startFrame, endFrame, scaleW, scaleH, initBB, False
-    xmin, ymin, width, height = float(words[0]), float(words[1]), float(words[2]), float(words[3])
-    initBB = Rect(xmin * scaleW, ymin * scaleH,width * scaleW, height * scaleH)
+    initBB = getTrueRect(rectFilePath, startFrame)
     return startFrame, endFrame, scaleW, scaleH, initBB, True
 
-def getTrueRect(rectFilePath, lineid):
-    line = linecache.getline(rectFilePath, lineid)
-    words = filter(None, line.split())
-    tRect = Rect(float(words[0]), float(words[1]), float(words[2]), float(words[3]))
-    return tRect
+
 
 
 
@@ -113,7 +107,7 @@ def main(argv=None):
         print 'Error: no features specified in config'
         return 0
 
-    resultsPath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + '/' + conf.resultsPath
+    resultsPath = './' + conf.resultsPath
     if isFile(resultsPath, 'res') is False:
         return 0
     fres = open(resultsPath, 'w')
