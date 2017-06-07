@@ -57,7 +57,7 @@ def setCamera(conf):
 
 def getTrueRect(rectFilePath, lineid):
     line = linecache.getline(rectFilePath, lineid)
-    words = filter(None, line.split(','))
+    words = filter(None, line.split())
     tRect = Rect(float(words[0]), float(words[1]), float(words[2]), float(words[3]))
     return tRect
 
@@ -77,7 +77,7 @@ def setFrame(conf):
     fframe.close()
 
     # Get the info about the image
-    imgFormatPath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + '/img/0001.jpg'
+    imgFormatPath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + '/img/00001.jpg'
     if isFile(imgFormatPath, 'imgFormat') is False:
         return startFrame, endFrame, scaleW, scaleH, initBB, False
     img = cv2.imread(imgFormatPath, 0)
@@ -88,11 +88,9 @@ def setFrame(conf):
     rectFilePath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + '/groundtruth_rect.txt'
     if isFile(rectFilePath, 'rect') is False:
         return startFrame, endFrame, scaleW, scaleH, initBB, False
-    initBB = getTrueRect(rectFilePath, startFrame)
+    rRect = getTrueRect(rectFilePath, startFrame)
+    initBB = Rect(rRect.XMin()*scaleW, rRect.YMin()*scaleH, rRect.Width()*scaleW, rRect.Height()*scaleH)
     return startFrame, endFrame, scaleW, scaleH, initBB, True
-
-
-
 
 
 
@@ -151,7 +149,7 @@ def main(argv=None):
                 print 'Error: video capture invalid.'
                 return 0
         else:
-            imgFramePath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + ('/img/%04d.jpg' % int(frameid))
+            imgFramePath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + ('/img/%05d.jpg' % int(frameid))
             if isFile(imgFramePath, 'imgFrame') is False:
                 return False
             frameOrig = cv2.imread(imgFramePath, 0)
@@ -162,6 +160,7 @@ def main(argv=None):
             result = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
 
             if frameid == startFrame:
+                initBB.printStr()
                 tracker.Initialize(frame, initBB)
 
         if tracker.IsInitialized():
