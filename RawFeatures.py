@@ -14,20 +14,18 @@ kPatchSize = 16
 
 class RawFeatures(Features):
 	def __init__(self, conf):
-    	Features.__init__(self)
-    	self.m_patchImage = np.zeros((kPatchSize, kPatchSize), np.uint8)
-    	self.SetCount(kPatchSize**2)
+		Features.__init__(self)
+		self.m_patchImage = np.zeros((kPatchSize, kPatchSize), np.uint8)
+		self.SetCount(kPatchSize**2)
 
-    def UpdateFeature(self, sam):
-    	rect = sam.GetROI()
-    	### ???
-    	original = sam.GetImage().GetImage(0)[rect.XMin():rect.XMax()+1, rect.YMin():rect.YMax()+1]
-    	self.m_patchImage = cv.resize(original,(self.m_patchImage.shape[1],self.m_patchImage.shape[0] ))
-    	ind = 0
-    	for i in range(kPatchSize):
-    		for j in range(kPatchSize):
-    			ind += 1
-    			pixel = self.m_patchImage[i][j]
-    			self.m_featVec[ind] = float(pixel)/255
-
-
+	def UpdateFeature(self, sam):
+		rect = sam.GetROI()
+		### ???
+		original = sam.GetImage().GetImage(0)[rect.XMin():rect.XMax()+1, rect.YMin():rect.YMax()+1]
+		self.m_patchImage = cv.resize(original,(self.m_patchImage.shape[1],self.m_patchImage.shape[0] ))
+		ind = 0
+		for i in range(kPatchSize):
+			for j in range(kPatchSize):
+				ind += 1
+				pixel = self.m_patchImage[i][j]
+				self.m_featVec[ind] = float(pixel)/255
