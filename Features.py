@@ -26,6 +26,6 @@ class Features:
             return self.m_featVec
         else:
             # ???
-            featVecs = np.zeros(s.GetRects().shape[0], s.GetRects().shape[1]) 
+            featVecs = []
             for i in (len(featVecs)):
-                featVecs[i] = Eval(multisam.GetSample(i))
+                featVecs.append(self.Eval(s.GetSample(i)))
