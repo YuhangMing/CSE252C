@@ -6,10 +6,11 @@ from Sample import Sample
 class Feature:
     def __init__(self):
     	self.m_featureCount = 0
+        self.m_featVec = []
 
     def SetCount(self, c):
     	self.m_featureCount = c
-    	self.m_feat = []
+    	self.m_featVec = [0]*c
 
     def GetCount(self):
     	return self.m_featureCount
@@ -20,7 +21,8 @@ class Feature:
     def Eval(self, multisam, feats=None):
     	if feats is None:
     		self.UpdateFeature(multisam)
-    		return self.m_feat
+    		return self.m_featVec
     	else:
-    		for i in range(len(multisam.GetRects())):
-    			self.m_feat.append(Eval(multisam.GetSample(i)))
+            # ???
+    		for i in (len(multisam.GetRects())):
+    			self.m_featVec.append(Eval(multisam.GetSample(i)))
