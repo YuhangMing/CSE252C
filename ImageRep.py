@@ -63,15 +63,19 @@ class ImageRep:
    
     
     def Sum(self, rRect, channel=0):
+        #rRect.printStr()
+        #print self.m_images[0].shape
         assert(rRect.XMin()>=0 and rRect.YMin()>=0 and                rRect.XMax()<=self.m_images[0].shape[1] and rRect.YMax()<=self.m_images[0].shape[0])
         return self.m_integralImages[channel][rRect.YMin()][rRect.XMin()] +                 self.m_integralImages[channel][rRect.YMax()][rRect.XMax()] -                 self.m_integralImages[channel][rRect.YMax()][rRect.XMin()] -                 self.m_integralImages[channel][rRect.YMin()][rRect.XMax()]
     
-    def Hist(self, rRect, h):
+    def Hist(self, rRect):
         assert(rRect.XMin()>=0 and rRect.YMin()>=0 and                 rRect.XMax()<=self.m_images[0].shape[1] and rRect.YMax()<=slef.m_images[0].shape[0])
         norm = rRect.Area();
+        h = [0]*kNumBins
         for i in range(kNumBins):
             total = self.m_integralHistImages[i][rRect.YMin()][rRect.XMin()] +                     self.m_integralHistImages[i][rRect.YMax()][rRect.XMax()] -                     self.m_integralHistImages[i][rRect.YMax()][rRect.XMin()] -                     self.m_integralHistImages[i][rRect.YMin()][rRect.XMax()]
             h[i] = float(total)/norm;
+        return h
     
     def GetImage(self, channel=0):
         return self.m_images[channel]

@@ -24,5 +24,6 @@ class Feature:
     		return self.m_featVec
     	else:
             # ???
+            self.m_featVec = []
     		for i in (len(multisam.GetRects())):
     			self.m_featVec.append(Eval(multisam.GetSample(i)))
