@@ -1,5 +1,6 @@
 import sys
 import cv2 as cv
+import numpy as np
 sys.path.append('./Sample.py')
 from Sample import Sample
 
@@ -18,12 +19,13 @@ class Features:
     def UpdateFeature(self, sam):
         pass
 
-    def Eval(self, multisam, feats=None):
-        if feats is None:
-            self.UpdateFeature(multisam)
+    # s - multisample
+    def Eval(self, s, featVecs=None):
+        if featVecs is None:
+            self.UpdateFeature(s)
             return self.m_featVec
         else:
             # ???
-            self.m_featVec = []
-            for i in (len(multisam.GetRects())):
-                self.m_featVec.append(Eval(multisam.GetSample(i)))
+            featVecs = np.zeros(s.GetRects().shape[0], s.GetRects().shape[1]) 
+            for i in (len(featVecs)):
+                featVecs[i] = Eval(multisam.GetSample(i))
