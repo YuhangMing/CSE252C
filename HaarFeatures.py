@@ -9,19 +9,21 @@ sys.path.append('./Features.py')
 from Features import Features
 
 
+kSystematicFeatureCount = 192
+
 class HaarFeatures(Features):
 	
-	kSystematicFeatureCount = 192
+	
 
-	## self.m_features -> self.features 
-	## self.featureCount -> self.featureCount
-	# m_featVec -> featList
+	## self.m_features -> self.features
+	## self.m_featureCount -> self.featureCount
+	# self.m_featVec -> self.featList
 	def __init__(self, conf):
-		self.features = []	############# delete
+		self.features = []
 		# self.featList = []		############# delete
 		# Skip Features Class in original C++ Code !!!!!!!!!!
 		# SetCount(kSystematicFeatureCount)
-		self.featureCount = 192
+		self.featureCount = kSystematicFeatureCount
 		# # m_featureCount = kSystematicFeatureCount
 		self.GenerateSystematic()
 
