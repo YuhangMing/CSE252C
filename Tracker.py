@@ -9,6 +9,9 @@ from Sampler import Sampler
 from Sample import Sample
 from Sample import MultiSample
 from HaarFeatures import HaarFeatures
+from RawFeatures import RawFeatures
+from HistogramFeatures import HistogramFeatures
+from MultiFeatures import MultiFeatures
 import Kernels
 from LaRank import LaRank
 
@@ -50,7 +53,7 @@ class Tracker:
             if feaType == 'haar':
                 self.features.append(HaarFeatures(self.config))
                 self.needIntegImg = True
-            elif featype == 'raw':
+            elif feaType == 'raw':
                 self.features.append(RawFeatures(self.config))
             elif feaType == 'histogram':
                 self.features.append(HistogramFeatures(m_config));
