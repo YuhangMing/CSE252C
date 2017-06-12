@@ -35,7 +35,7 @@ class HistogramFeatures(Features):
                 cell.SetYMin(sam.GetROI().YMin()+iy*h)
                 for ix in range(nc):
                     cell.SetXMin(sam.GetROI().XMin()+ix*w)
-                    hist = sam.GetSelf().m_image.Hist(cell)
+                    hist = sam.GetSelf().image.Hist(cell)
                     self.featList[histind*kNumBins:(histind+1)*kNumBins] = hist[:]
                     histind+=1
         # tmp_arr = np.array(self.featList)
