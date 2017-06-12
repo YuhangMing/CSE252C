@@ -9,6 +9,9 @@ from Sampler import Sampler
 from Sample import Sample
 from Sample import MultiSample
 from HaarFeatures import HaarFeatures
+from RawFeatures import RawFeatures
+from HistogramFeatures import HistogramFeatures
+from MultiFeatures import MultiFeatures
 import Kernels
 from LaRank import LaRank
 
@@ -42,7 +45,7 @@ class Tracker:
         self.features = []
         self.kernels = []
         featureCounts = []
-        numFeatures = self.config.features.size()
+        numFeatures = len(self.config.features)
             
 
         for feat in self.config.features:
@@ -68,9 +71,9 @@ class Tracker:
                 self.kernels.append(Kernels.Chi2Kernel())
 
         if (numFeatures > 1):
-            mf = MultiFeature(self.features)
+            mf = MultiFeatures(self.features)
             self.features.append(mf)   
-            mk = MultiKernel(self.kernels, featureCount)
+            mk = MultiKernels(self.kernels, featureCount)
             self.kernels.append(mk)
 
         self.pLearner = LaRank(self.config, self.features[-1], self.kernels[-1])
