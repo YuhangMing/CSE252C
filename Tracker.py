@@ -74,7 +74,7 @@ class Tracker:
         if (numFeatures > 1):
             mf = MultiFeatures(self.features)
             self.features.append(mf)   
-            mk = MultiKernels(self.kernels, featureCount)
+            mk = Kernels.MultiKernel(self.kernels, featureCounts)
             self.kernels.append(mk)
 
         self.pLearner = LaRank(self.config, self.features[-1], self.kernels[-1])
