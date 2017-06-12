@@ -5,9 +5,11 @@ sys.path.append('./Config.py')
 from Config import Config
 sys.path.append('./HaarFeature.py')
 from HaarFeature import HaarFeature
+sys.path.append('./Features.py')
+from Features import Features
 
 
-class HaarFeatures:
+class HaarFeatures(Features):
 	
 	kSystematicFeatureCount = 192
 
@@ -25,8 +27,8 @@ class HaarFeatures:
 	# def add_featVec(self, new_featVec):
 	# 	self.m_featVec.append(new_featVec)
 
-	def GetCount(self):
-		return self.m_featureCount
+	# def GetCount(self):
+	# 	return self.m_featureCount
 
 	def GenerateSystematic(self):
 		x = [0.2, 0.4, 0.6, 0.8]
@@ -42,30 +44,31 @@ class HaarFeatures:
 						new_feature = HaarFeature(r, itype)
 						self.add_feature(new_feature)
 
-	# def UpdateFeatureVector(self, sample):
-	# 	self.m_featVec = []
-	# 	for i in range(self.m_featureCount):
-	# 		new_featVec = self.m_features[i].Eval(sample)
-	# 		self.m_featVec.append(new_featVec)
-	# 		# self.add_featVec(new_featVec)
-	# 	# print('length of m_featVec: '+str(len(self.m_featVec)))
-	# 	return self.m_featVec
+	def UpdateFeature(self, sample):
+		self.m_featVec = []
+		for i in range(self.m_featureCount):
+			new_featVec = self.m_features[i].Eval(sample)
+			self.m_featVec.append(new_featVec)
+			# self.add_featVec(new_featVec)
+		# print('length of m_featVec: '+str(len(self.m_featVec)))
+		# return self.m_featVec
 
 
 	# def EvalOne(self, s):
 	# 	return self.UpdateFeatureVector(s)
 
 
-	def Eval(self, s, featVec):
-		# print('# of rects: ' + str(len(s.GetRects())))
-		for j in range(len(s.GetRects())):
-			# featVec[i, :] = self.UpdateFeatureVector(s.GetSample(i))
-			# featVec[i, :] = self.EvalOne(s.GetSample(i))
-			self.m_featVec = []
-			for i in range(self.m_featureCount):
-				new_featVec = self.m_features[i].Eval(s.GetSample(j))
-				self.m_featVec.append(new_featVec)
-			featVec[j, :] = self.m_featVec
+	# def Eval(self, s, featVec):
+	# 	print("haarfeatures")
+	# 	# print('# of rects: ' + str(len(s.GetRects())))
+	# 	for j in range(len(s.GetRects())):
+	# 		# featVec[i, :] = self.UpdateFeatureVector(s.GetSample(i))
+	# 		# featVec[i, :] = self.EvalOne(s.GetSample(i))
+	# 		self.m_featVec = []
+	# 		for i in range(self.m_featureCount):
+	# 			new_featVec = self.m_features[i].Eval(s.GetSample(j))
+	# 			self.m_featVec.append(new_featVec)
+	# 		featVec[j, :] = self.m_featVec
 			# print("in haarfeatures.Eval, j = : ", j)
 			# print(featVec[j, :])
 			# print("")

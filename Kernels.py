@@ -31,11 +31,13 @@ class GaussianKernel(Kernel):
 
     def Eval(self, x1, x2=None):
         if x2 is not None:
-            norm_val = (np.linalg.norm(x1-x2)) ** 2
+            # print("x1 - x2")
+            # print(x1 - x2)
+            # tmp = np.array(x1-x2, dtype = np.float32)
+            # norm_val = (np.linalg.norm(x1 - x2, ord=2))
+            norm_val = (np.linalg.norm(x1 - x2)) ** 2
             # print(-1 * float(self.m_sigma))
             # print(norm_val)
-            # print(-1 * float(self.m_sigma) * norm_val)
-            # print(np.exp(-1 * float(self.m_sigma) * norm_val))
             return np.exp(-1 * float(self.m_sigma) * norm_val)
             # inner = map(lambda d: -1*float(self.m_sigma)*d, (x1-x2))
             # return np.exp(np.linalg.norm(inner))
