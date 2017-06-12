@@ -24,7 +24,7 @@ class Tracker:
         r = Rect()
         self.bb = r.initFromRect(rect)
         #image = IntegImg(frame) # orImgRep
-        img = ImageRep(frame, True, False, False)
+        img = ImageRep(frame, self.needIntegImg, self.needIntegHist, False)
         # print("integral Image")
         # print(img)
         self.UpdateLearner(img)
@@ -56,8 +56,9 @@ class Tracker:
             elif feaType == 'raw':
                 self.features.append(RawFeatures(self.config))
             elif feaType == 'histogram':
-                self.features.append(HistogramFeatures(self.config));
                 self.needIntegHist = True
+                self.features.append(HistogramFeatures(self.config));
+                
             featureCounts.append(self.features[-1].GetCount())
 
             kerType = feat.kernelName

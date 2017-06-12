@@ -19,6 +19,8 @@ class Sample:
         return self.m_image
     def GetROI(self):
         return self.m_roi
+    def GetSelf(self):
+        return self
     
 class MultiSample:
     def __init__(self, image, rects):

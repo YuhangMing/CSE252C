@@ -12,6 +12,8 @@ from Rect import Rect
 kNumBins = 16;
 class ImageRep:
     def __init__(self, image, computeIntegral=True, computeIntegralHist=False, colour=False):
+        # print("ImageRep.init")
+        # print(computeIntegral, computeIntegralHist, colour)
         self.m_channels = 3 if colour else 1
         self.m_rect = Rect(0, 0, image.shape[1], image.shape[0])
         # print(self.m_rect.XMin())
@@ -59,7 +61,7 @@ class ImageRep:
                     for x in range(image.shape[1]):
                         sbin = int(float(self.m_images[0][y][x])/256.0*kNumBins)
                         tmp[y][x] = 1 if sbin == j else 0
-                self.m_integralImages[j] = cv.integral(tmp)
+                self.m_integralHistImages[j] = cv.integral(tmp)
    
     
     def Sum(self, rRect, channel=0):
@@ -69,11 +71,14 @@ class ImageRep:
         return self.m_integralImages[channel][rRect.YMin()][rRect.XMin()] +                 self.m_integralImages[channel][rRect.YMax()][rRect.XMax()] -                 self.m_integralImages[channel][rRect.YMax()][rRect.XMin()] -                 self.m_integralImages[channel][rRect.YMin()][rRect.XMax()]
     
     def Hist(self, rRect):
-        assert(rRect.XMin()>=0 and rRect.YMin()>=0 and                 rRect.XMax()<=self.m_images[0].shape[1] and rRect.YMax()<=slef.m_images[0].shape[0])
+        assert(rRect.XMin()>=0 and rRect.YMin()>=0 and                 rRect.XMax()<=self.m_images[0].shape[1] and rRect.YMax()<=self.m_images[0].shape[0])
         norm = rRect.Area();
         h = [0]*kNumBins
+        print(len(self.m_integralHistImages))
+        print(kNumBins)
         for i in range(kNumBins):
-            total = self.m_integralHistImages[i][rRect.YMin()][rRect.XMin()] +                     self.m_integralHistImages[i][rRect.YMax()][rRect.XMax()] -                     self.m_integralHistImages[i][rRect.YMax()][rRect.XMin()] -                     self.m_integralHistImages[i][rRect.YMin()][rRect.XMax()]
+            print(i)
+            total = self.m_integralHistImages[i][int(rRect.YMin())][int(rRect.XMin())] +                     self.m_integralHistImages[i][int(rRect.YMax())][int(rRect.XMax())] -                     self.m_integralHistImages[i][int(rRect.YMax())][int(rRect.XMin())] -                     self.m_integralHistImages[i][int(rRect.YMin())][int(rRect.XMax())]
             h[i] = float(total)/norm;
         return h
     

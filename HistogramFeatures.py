@@ -1,5 +1,6 @@
 import sys
 import cv2 as cv
+import numpy as np
 sys.path.append('./Features.py')
 from Features import Features
 sys.path.append('./Config.py')
@@ -35,7 +36,11 @@ class HistogramFeatures(Features):
                     hist = sam.GetSelf().m_image.Hist(cell)
                     self.m_featVec[histind*kNumBins:(histind+1)*kNumBins] = hist[:]
                     histind+=1
-        self.m_featVec /= histind
+        # tmp_arr = np.array(self.m_featVec)
+        # tmp_arr/= histind
+        # self.m_featVec = tmp_arr.tolist()
+        self.m_featVec = [x/histind for x in self.m_featVec]
+        # self.m_featVec /= histind
 
 
 
