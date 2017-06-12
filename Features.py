@@ -28,6 +28,5 @@ class Features:
             self.UpdateFeature(s)
             return self.featList
         else:
-            # ???
-            for i in range(len(s.GetRects())):
+            for i in xrange(len(s.GetRects())):
                 featLists.append(self.Eval(s.GetSample(i)))
