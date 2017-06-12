@@ -115,7 +115,7 @@ def trackCamera(conf):
 
 def getTrueRect(rectFilePath, lineid):
     line = linecache.getline(rectFilePath, lineid)
-    words = filter(None, re.split('; |,', line))
+    words = filter(None, re.split(r'(?:,|;|\s)\s*', line))
     tRect = Rect(float(words[0]), float(words[1]), float(words[2]), float(words[3]))
     return tRect
 
@@ -126,7 +126,8 @@ def trackFrame(conf):
         return False
     fframe = open(frameFilePath, 'r')
     line = fframe.readline()
-    words = filter(None, re.split('; |,', line))
+    words = filter(None, re.split(r'(?:,|;|\s)\s*', line))
+    #print words
     if len(words) != 2 or int(words[0]) < 0 or int(words[0]) > int(words[1]):
         print 'Error: do not get the correct frame params.'    
         return False
@@ -148,7 +149,12 @@ def trackFrame(conf):
     rRect = getTrueRect(rectFilePath, startFrame)
     initBB = Rect(rRect.XMin()*scaleW, rRect.YMin()*scaleH, rRect.Width()*scaleW, rRect.Height()*scaleH)
 
+    resultsPath = './' + conf.resultsPath
+    if isFile(resultsPath, 'res') is False:
+        return False
+    fres = open(resultsPath, 'w')
 
+    
     if not conf.quietMode:
         cv2.namedWindow('Result')
 
@@ -238,11 +244,6 @@ def main(argv=None):
     if len(conf.features) == 0:
         print 'Error: no features specified in config'
         return False
-
-    resultsPath = './' + conf.resultsPath
-    if isFile(resultsPath, 'res') is False:
-        return False
-    fres = open(resultsPath, 'w')
 
     useCamera = (conf.sequenceName == '')
 
