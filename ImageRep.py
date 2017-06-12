@@ -74,10 +74,7 @@ class ImageRep:
         assert(rRect.XMin()>=0 and rRect.YMin()>=0 and                 rRect.XMax()<=self.m_images[0].shape[1] and rRect.YMax()<=self.m_images[0].shape[0])
         norm = rRect.Area();
         h = [0]*kNumBins
-        print(len(self.m_integralHistImages))
-        print(kNumBins)
         for i in range(kNumBins):
-            print(i)
             total = self.m_integralHistImages[i][int(rRect.YMin())][int(rRect.XMin())] +                     self.m_integralHistImages[i][int(rRect.YMax())][int(rRect.XMax())] -                     self.m_integralHistImages[i][int(rRect.YMax())][int(rRect.XMin())] -                     self.m_integralHistImages[i][int(rRect.YMin())][int(rRect.XMax())]
             h[i] = float(total)/norm;
         return h
