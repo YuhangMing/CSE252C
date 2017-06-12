@@ -8,8 +8,10 @@ import random
 
 sys.path.append('./Config.py')
 from Config import Config
-sys.path.append('./HaarFeatures.py')
-from HaarFeatures import HaarFeatures
+# sys.path.append('./HaarFeatures.py')
+# from HaarFeatures import HaarFeatures
+sys.path.append('./Features.py')
+from Features import Features
 sys.path.append('./Kernels.py')
 from Kernels import GaussianKernel	# which kernel to import
 sys.path.append('./Sample.py')
@@ -85,6 +87,9 @@ class LaRank:
 
 	# (const Eigen::VectorXd& x, const FloatRect& y)
 	def Evaluate(self, x, y):
+		# print(x)
+		# print("")
+		# print(y)
 		f = 0.0
 		for i in range(len(self.m_svs)):
 			sv = self.m_svs[i]
@@ -109,7 +114,7 @@ class LaRank:
 
 	# (const MultiSample& sample, int y)
 	def Update(self, sample, y):
-		print('start updating')
+		# print('start updating')
 		sp = SupportPattern()
 		rects = sample.GetRects()	# GetRects function in Sample class, should be a list of rects, 4xn
 		center = Rect()
@@ -134,7 +139,7 @@ class LaRank:
 
 		# evaluate feature for each sample
 		# sp.x.resize(len(rects))		# may not need this resize here, try get value one by one and append/add to list
-		sp.x = np.zeros((len(sample.GetRects()), 192), np.float32)
+		# sp.x = np.zeros((len(sample.GetRects()), 192), np.float32)
 		
 		# Print some vals ##################
 		# print("LaRank.Update, entering haarfeatures.Eval: ")
@@ -162,12 +167,6 @@ class LaRank:
 			# print(len(self.m_svs))
 			self.Reprocess()
 			self.BudgetMaintenance()
-
-		# print('In Update:')
-		# # print(sp.x)			# looks good
-		# print(len(self.m_svs))
-		# print(self.m_K)		# value wrong here !!!!!!!!!!!!!!!!!!!!
-		# print("end Update")
 
 	def BudgetMaintenance(self):
 		if (self.m_config.svmBudgetSize > 0):
@@ -219,13 +218,7 @@ class LaRank:
 			for i in range(len(self.m_svs)):
 				svi = self.m_svs[i]
 				svi.g -= l * (self.m_K[i, ipos] - self.m_K[i, ineg])
-			# print(svp.g - svn.g)
-			# print('lu = %f' % lu)
-			# tmp = self.m_C * (svp.y == sp.y) - svp.b
-			# print('tmp = %f' % tmp)
 			# print("SMO: %d, %d -- %f, %f (%f)" % (ipos, ineg, svp.b, svn.b, l))
-			# print(kii)
-			# print('')
 
 		# check if we should remove either sv now
 		if (abs(svp.b) < 1e-8):
@@ -241,11 +234,7 @@ class LaRank:
 	def MinGradient(self, ind):
 		sp = self.m_sps[ind]
 		minGrad = [-1, sys.float_info.max]
-		for i in range(1, len(sp.yv)):			# change back to 0 start
-			
-			# print(i)
-			# print(sp.x[i])
-
+		for i in range(len(sp.yv)):
 			grad = -self.Loss(sp.yv[i], sp.yv[sp.y]) - self.Evaluate(sp.x[i], sp.yv[i])
 			if (grad < minGrad[1]):
 				minGrad[0] = i
@@ -255,7 +244,11 @@ class LaRank:
 	# (int ind)
 	def ProcessNew(self, ind):
 		# gradient is -F(x, y) since loss = 0
-		print("process new ind = ", ind)
+		# print("process new ind = ", ind)
+		# AddSupportVector(self, x, y, g):
+		print("length of x")
+		print(len(self.m_sps[ind].x))
+		print(self.m_sps[ind].y)
 		yp = self.AddSupportVector(self.m_sps[ind], self.m_sps[ind].y, -self.Evaluate( self.m_sps[ind].x[ self.m_sps[ind].y ], self.m_sps[ind].yv[ self.m_sps[ind].y ] ))
 
 		minGrad = self.MinGradient(ind)
@@ -322,13 +315,6 @@ class LaRank:
 				continue
 
 			svi = self.m_svs[i]
-			# print('i = %d' % i)
-			# print(svi.g)
-			# print(svi.b)
-			# print(svi.y)
-			# print(self.m_sps[ind].y)
-			# print(self.m_C * (svi.y == self.m_sps[ind].y))
-
 			if (svi.g > maxGrad and svi.b < self.m_C * float(svi.y == self.m_sps[ind].y)):
 				yp = i
 				maxGrad = svi.g
@@ -336,10 +322,6 @@ class LaRank:
 			if (svi.g < minGrad):
 				yn = i
 				minGrad = svi.g
-
-		# print('yp & yn')
-		# print(yp)
-		# print(yn)
 
 		assert (yp != -1 and yn != -1)
 		if (yp == -1 or yn == -1):
@@ -350,8 +332,6 @@ class LaRank:
 		self.SMOStep(yp, yn)
 
 	def AddSupportVector(self, x, y, g):
-		# print(y)
-		# print(g)
 		sv = SupportVector(x, y, 0.0, g) 
 		# SupportVector* sv = new SupportVector;
 		# sv->x = x;
@@ -361,22 +341,12 @@ class LaRank:
 
 		ind = len(self.m_svs)
 		self.add_svs(sv)
-		# self.m_svs.append(sv)
 		x.refCount += 1
-
-		print("Adding SV: ", ind)
+		# print("Adding SV: ", ind)
 		# print('y = %d, g = %f' % (y, g))
 
 		# update kernel matrix
 		for i in range(ind):
-			##########################################
-			### PROBLEM HERE #########################
-			# print("x1: ")
-			# print(self.m_svs[i].x.x[ self.m_svs[i].y ])
-			# print("x2: ")
-			# print(x.x[y])
-			# print("")
-			##########################################
 			self.m_K[i, ind] = self.m_kernel.Eval(self.m_svs[i].x.x[ self.m_svs[i].y ], x.x[y])
 			self.m_K[ind, i] = self.m_K[i, ind]
 		
@@ -398,8 +368,6 @@ class LaRank:
 
 	def RemoveSupportVector(self, ind):
 		# print("Removing SV: %d" % ind)
-		# print(len(self.m_svs))
-
 		self.m_svs[ind].x.refCount -= 1
 		if (self.m_svs[ind].x.refCount == 0):
 			# also remove support pattern
@@ -551,7 +519,7 @@ if __name__ == '__main__':
 	main_featureCount = []
 	numFeatures = len(conf.features)
 	for i in range(numFeatures):
-		main_features.append(HaarFeatures(conf))
+		main_features.append(Features(conf))
 		main_kernels.append(GaussianKernel(conf.features[i].params[0]))
 		main_featureCount.append(main_features[-1].GetCount())
 
