@@ -77,7 +77,7 @@ def setFrame(conf):
     fframe.close()
 
     # Get the info about the image
-    imgFormatPath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + '/img/00001.jpg'
+    imgFormatPath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + '/img/0001.jpg'
     if isFile(imgFormatPath, 'imgFormat') is False:
         return startFrame, endFrame, scaleW, scaleH, initBB, False
     img = cv2.imread(imgFormatPath, 0)
@@ -149,7 +149,7 @@ def main(argv=None):
                 print 'Error: video capture invalid.'
                 return 0
         else:
-            imgFramePath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + ('/img/%05d.jpg' % int(frameid))
+            imgFramePath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + ('/img/%04d.jpg' % int(frameid))
             if isFile(imgFramePath, 'imgFrame') is False:
                 return False
             frameOrig = cv2.imread(imgFramePath, 0)
@@ -184,13 +184,18 @@ def main(argv=None):
                 fres.write(' %.2f' % overlap)
             fres.write('\n')
 
-        print "hello image"
+        # print "hello image"
 
         if not conf.quietMode:
-            print 'show image'
+            # print 'show image'
             cv2.imshow("result", result)
             if paused:
                 key = cv2.waitKey() & 0xFF
+                print("manual")
+                print("press i to start tracking in camera mode")
+                print("press q to escape")
+                print("press P to keep tracking")
+                print("press any other key to track 1 frame")
             else:
                 key = cv2.waitKey(1) & 0xFF
             if key != -1:

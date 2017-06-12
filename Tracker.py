@@ -56,7 +56,7 @@ class Tracker:
             elif feaType == 'raw':
                 self.features.append(RawFeatures(self.config))
             elif feaType == 'histogram':
-                self.features.append(HistogramFeatures(m_config));
+                self.features.append(HistogramFeatures(self.config));
                 self.needIntegHist = True
             featureCounts.append(self.features[-1].GetCount())
 
