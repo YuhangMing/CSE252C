@@ -18,8 +18,10 @@ class LinearKernel(Kernel):
         Kernel.__init__(self)
 
     def Eval(self, x1, x2=None):
-        if x2 != None:
-            return np.dot(x1, x2)
+        if x2 is not None:
+            x11 = np.array(x1)
+            x22 = np.array(x2)
+            return np.dot(x11, x22)
         else:
             return np.linalg.norm(x1)
 
@@ -35,7 +37,9 @@ class GaussianKernel(Kernel):
             # print(x1 - x2)
             # tmp = np.array(x1-x2, dtype = np.float32)
             # norm_val = (np.linalg.norm(x1 - x2, ord=2))
-            norm_val = (np.linalg.norm(x1 - x2)) ** 2
+            x11 = np.array(x1)
+            x22 = np.array(x2)
+            norm_val = (np.linalg.norm(x11 - x22)) ** 2
             # print(-1 * float(self.m_sigma))
             # print(norm_val)
             return np.exp(-1 * float(self.m_sigma) * norm_val)
@@ -51,7 +55,9 @@ class IntersectionKernel(Kernel):
 
     def Eval(self, x1, x2=None):
         if x2 is not None:
-            return np.minimum(x1, x2).sum()
+            x11 = np.array(x1)
+            x22 = np.array(x2)
+            return np.sum(np.minimum(x11, x22))
         else:
             return np.sum(x1)
 
@@ -63,9 +69,11 @@ class Chi2Kernel(Kernel):
 
     def Eval(self, x1, x2=None):
         if x2 is not None:
+            x11 = np.array(x1)
+            x22 = np.array(x2)
             result = 0.0
             for i in range(len(x1)):
-                a, b = x1[i], x2[i]
+                a, b = x11[i], x22[i]
                 result += (a-b)*(a-b)/(0.5*(a+b)+1e-8)
             return 1.0 - result
         else:

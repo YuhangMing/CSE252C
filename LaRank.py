@@ -101,7 +101,8 @@ class LaRank:
 	def Eval(self, sample, results): 
 		centre = Rect()
 		centre.initFromRect(sample.GetRects()[0])
-		fvs = np.zeros((len(sample.GetRects()), 192), np.float32)
+		# fvs = np.zeros((len(sample.GetRects()), 192), np.float32)
+		fvs = []
 		self.m_features.Eval(sample, fvs)	# Eval function in Features, results in fvs variable
 		results[:] = []
 		for i in range(len(fvs)):
@@ -145,8 +146,10 @@ class LaRank:
 		# print("LaRank.Update, entering haarfeatures.Eval: ")
 		####################################
 
+		sp.x = []
 		self.m_features.Eval(sample, sp.x)	# const_cast<Features&>(m_features).Eval(sample, sp->x);
 
+		print(len(sp.x))
 		# Print some vals ##################
 		# print("before precess new")
 		# print(sp.x[0])
@@ -246,9 +249,6 @@ class LaRank:
 		# gradient is -F(x, y) since loss = 0
 		# print("process new ind = ", ind)
 		# AddSupportVector(self, x, y, g):
-		print("length of x")
-		print(len(self.m_sps[ind].x))
-		print(self.m_sps[ind].y)
 		yp = self.AddSupportVector(self.m_sps[ind], self.m_sps[ind].y, -self.Evaluate( self.m_sps[ind].x[ self.m_sps[ind].y ], self.m_sps[ind].yv[ self.m_sps[ind].y ] ))
 
 		minGrad = self.MinGradient(ind)

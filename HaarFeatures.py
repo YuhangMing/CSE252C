@@ -14,8 +14,8 @@ class HaarFeatures(Features):
 	kSystematicFeatureCount = 192
 
 	def __init__(self, conf):
-		self.m_features = []
-		self.m_featVec = []
+		self.m_features = []	############# delete
+		# self.m_featVec = []		############# delete
 		# Skip Features Class in original C++ Code !!!!!!!!!!
 		# SetCount(kSystematicFeatureCount)
 		self.m_featureCount = 192

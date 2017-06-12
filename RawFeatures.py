@@ -21,11 +21,12 @@ class RawFeatures(Features):
 	def UpdateFeature(self, sam):
 		rect = sam.GetROI()
 		### ???
-		original = sam.GetImage().GetImage(0)[rect.XMin():rect.XMax()+1, rect.YMin():rect.YMax()+1]
+		original = sam.GetImage().GetImage(0)[int(rect.XMin()):int(rect.XMax())+1, int(rect.YMin()):int(rect.YMax())+1]
 		self.m_patchImage = cv.resize(original,(self.m_patchImage.shape[1],self.m_patchImage.shape[0] ))
 		ind = 0
 		for i in range(kPatchSize):
 			for j in range(kPatchSize):
-				ind += 1
+				
 				pixel = self.m_patchImage[i][j]
 				self.m_featVec[ind] = float(pixel)/255
+				ind += 1
