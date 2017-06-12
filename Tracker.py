@@ -22,8 +22,8 @@ class Tracker:
         self.bb = r.initFromRect(rect)
         #image = IntegImg(frame) # orImgRep
         img = ImageRep(frame, True, False, False)
-        print("integral Image")
-        print(img)
+        # print("integral Image")
+        # print(img)
         self.UpdateLearner(img)
         self.initialized = True
 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     #     if key == 27: # exit on ESC
     #         break
     # cv2.destroyWindow("preview")
-
+ 
     tmp = cv2.imread('./data/Girl/img/%04d.jpg' % 1)
     scaleW = float(c.frameWidth) / tmp.shape[1]
     scaleH = float(c.frameHeight) / tmp.shape[0]
