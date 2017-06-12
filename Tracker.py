@@ -42,7 +42,7 @@ class Tracker:
         self.features = []
         self.kernels = []
         featureCounts = []
-        numFeatures = self.config.features.size()
+        numFeatures = len(self.config.features)
             
 
         for feat in self.config.features:
