@@ -79,7 +79,7 @@ class LaRank:
 			# express y in coord fram of center sample
 			y = Rect()
 			y.initFromRect( sample.GetRects()[i] )
-			y.Translate(-centre.XMin(), -centre.YMin())	# functions in Rect
+			y.translate(-centre.getX(), -centre.getY())	# functions in Rect
 			results.append(self.CalF(fvs[i], y))
 
 	# i, y+, y-
@@ -129,7 +129,7 @@ class LaRank:
 		sp = self.sps[ind]
 		minGrad = sys.float_info.max
 		for i in range(len(sp.yv)):
-			grad = -(1 - sp.yv[i].Overlap(sp.yv[sp.y])) - self.CalF(sp.x[i], sp.yv[i])
+			grad = -(1 - sp.yv[i].overlap(sp.yv[sp.y])) - self.CalF(sp.x[i], sp.yv[i])
 			if (grad < minGrad):
 				minInd = i
 				minGrad = grad
@@ -275,14 +275,14 @@ class LaRank:
 			r = Rect()
 			r.initFromRect(rects[i])
 			# represent rectangle in the coordinate frame of the center rectangle
-			r.Translate(-center.XMin(), -center.YMin())
+			r.Translate(-center.getX(), -center.getY())
 			sp.add_yv(r)
 			if (not(self.config_file.quietMode) and self.config_file.debugMode):
 				im = np.zeros((kTileSize, kTileSize), np.uint8)
 				rect = Rect()
 				rect.initFromRect(rects[i])
 
-				roi = [rect.XMin(), rect.XMin()+rect.Width(), rect.YMin(), rect.YMin()+rect.Height()] #[xmin, xmax, ymin, ymax]
+				roi = [rect.getX(), rect.getX()+rect.getWidth(), rect.getY(), rect.getY()+rect.getHeight()] #[xmin, xmax, ymin, ymax]
 				cv2.resize(sample.GetImage().GetImage(0)[int(roi[2]):int(roi[3]), int(roi[0]):int(roi[1])], im.shape, im)
 				sp.add_image(im)
 

@@ -165,6 +165,7 @@ def trackFrame(conf):
     rectFilePath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + '/groundtruth_rect.txt'
 
     for frameid in xrange(startFrame, endFrame + 1):
+        print("Processing frame #" + str(frameid))
         imgFramePath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + ('/img/%04d.jpg' % int(frameid))
         if isFile(imgFramePath, 'imgFrame') is False:
             return False

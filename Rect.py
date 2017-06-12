@@ -59,7 +59,7 @@ class Rect:
         self.y = y
 
     def setWidth(self, w):
-        self.width = x
+        self.width = w
 
     def setHeight(self, h):
         self.height = h
