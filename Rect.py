@@ -15,7 +15,7 @@ class Rect:
 
     def printStr(self):
         print '%d %d %d %d' %(self.x, self.y, self.width, self.height)
-  
+
     # Getters
     def getX(self):
         return self.x
@@ -44,7 +44,7 @@ class Rect:
     def getArea(self):
         return self.width * self.height
 
-     
+
     # Setters
     def set(self, x, y, width, height):
         self.x = x
@@ -79,10 +79,10 @@ class Rect:
 
         width = xMax - x
         height = yMax - y
-        
+
         if( width <= 0 or height <= 0 ):
             return 0
-        
+
         intersection = width * height
         union = self.getArea() + r2.getArea() - intersection
         return float(intersection) / float(union)
@@ -139,7 +139,7 @@ class Rect:
     def SetHeight(self, h):
         self.height = h
 
-    
+
     # Other useful methods
     def IsInside(self, r2):
         xIn = (r2.getX() <= self.getX()) and (self.getXMax() <= r2.getXMax())
@@ -166,18 +166,18 @@ class Rect:
         self.x += dx
         self.y += dy
 
-if __name__ == "__main__":
-    r1 = Rect(0, 0, 5, 5)
-    r2 = Rect(2, 2, 7, 7)
-    r3 = Rect()
-    r3.initFromRect(r2)
-    print(r2.XMin())
-    print(r2.XCentre())
-    print(r2.XMax())
-    print(r2.YMin())
-    print(r2.YCentre())
-    print(r2.YMax())
-    print(r2.Area())
-    print(r1.isInside(r2))
-    print(r1.overlap(r2))
-    print(r2.isInside(r3))
+# if __name__ == "__main__":
+#     r1 = Rect(0, 0, 5, 5)
+#     r2 = Rect(2, 2, 7, 7)
+#     r3 = Rect()
+#     r3.initFromRect(r2)
+#     print(r2.XMin())
+#     print(r2.XCentre())
+#     print(r2.XMax())
+#     print(r2.YMin())
+#     print(r2.YCentre())
+#     print(r2.YMax())
+#     print(r2.Area())
+#     print(r1.isInside(r2))
+#     print(r1.overlap(r2))
+#     print(r2.isInside(r3))

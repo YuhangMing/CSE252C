@@ -26,9 +26,9 @@ class Sampler:
         fRect.initFromRect(centre)
         samples, rstep, tstep = [], float(radius)/nr, 2*float(math.pi)/nt
         samples.append(deepcopy(fRect))
-        for ir in range(1, nr+1):
+        for ir in xrange(1, nr+1):
             phase = (ir%2)*tstep/2.0
-            for it in range(nt):
+            for it in xrange(nt):
                 theta = it*tstep+phase
                 dx, dy = ir*rstep*math.cos(theta), ir*rstep*math.sin(theta)
                 fRect.SetXMin(centre.XMin() + dx)
@@ -45,8 +45,8 @@ class Sampler:
         samples = []
         samples.append(deepcopy(iRect))
         radius = int(radius)
-        for iy in range(-radius, radius+1):
-            for ix in range(-radius, radius+1):
+        for iy in xrange(-radius, radius+1):
+            for ix in xrange(-radius, radius+1):
                 if ix*ix+iy*iy > radius*radius:
                     continue
                 if iy is 0 and ix is 0:

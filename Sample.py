@@ -12,9 +12,6 @@ sys.path.append('./ImageRep.py')
 from ImageRep import ImageRep
 
 
-## self.m_image -> self.image
-## self.m_roi -> self.roi
-## self.m_rects -> self.rects
 class Sample:
     def __init__(self, image, roi):
         self.image = image

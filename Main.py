@@ -101,7 +101,7 @@ def trackCamera(conf):
                     break
                 elif key == 112: # p
                     paused = not paused
-                elif key == 105 and useCamera: # i
+                elif key == 105: # i
                     doInitialize = True
                     print 'doInitialize'
             if conf.debugMode and frameid == endFrame:
@@ -217,7 +217,7 @@ def trackFrame(conf):
                     break
                 elif key == 112: # p
                     paused = not paused
-                elif key == 105 and useCamera: # i
+                elif key == 105: # i
                     doInitialize = True
                     print 'doInitialize'
             if conf.debugMode and frameid == endFrame:
