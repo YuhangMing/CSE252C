@@ -13,22 +13,25 @@ class HaarFeatures(Features):
 	
 	kSystematicFeatureCount = 192
 
+	## self.m_features -> self.features 
+	## self.featureCount -> self.featureCount
+	# m_featVec -> featList
 	def __init__(self, conf):
-		self.m_features = []	############# delete
-		# self.m_featVec = []		############# delete
+		self.features = []	############# delete
+		# self.featList = []		############# delete
 		# Skip Features Class in original C++ Code !!!!!!!!!!
 		# SetCount(kSystematicFeatureCount)
-		self.m_featureCount = 192
+		self.featureCount = 192
 		# # m_featureCount = kSystematicFeatureCount
 		self.GenerateSystematic()
 
 	def add_feature(self, new_feature):
-		self.m_features.append(new_feature)
+		self.features.append(new_feature)
 	# def add_featVec(self, new_featVec):
-	# 	self.m_featVec.append(new_featVec)
+	# 	self.featList.append(new_featVec)
 
 	# def GetCount(self):
-	# 	return self.m_featureCount
+	# 	return self.featureCount
 
 	def GenerateSystematic(self):
 		x = [0.2, 0.4, 0.6, 0.8]
@@ -45,13 +48,13 @@ class HaarFeatures(Features):
 						self.add_feature(new_feature)
 
 	def UpdateFeature(self, sample):
-		self.m_featVec = []
-		for i in range(self.m_featureCount):
-			new_featVec = self.m_features[i].Eval(sample)
-			self.m_featVec.append(new_featVec)
+		self.featList = []
+		for i in range(self.featureCount):
+			new_featList = self.features[i].Eval(sample)
+			self.featList.append(new_featList)
 			# self.add_featVec(new_featVec)
-		# print('length of m_featVec: '+str(len(self.m_featVec)))
-		# return self.m_featVec
+		# print('length of m_featVec: '+str(len(self.featList)))
+		# return self.featList
 
 
 	# def EvalOne(self, s):
@@ -64,11 +67,11 @@ class HaarFeatures(Features):
 	# 	for j in range(len(s.GetRects())):
 	# 		# featVec[i, :] = self.UpdateFeatureVector(s.GetSample(i))
 	# 		# featVec[i, :] = self.EvalOne(s.GetSample(i))
-	# 		self.m_featVec = []
-	# 		for i in range(self.m_featureCount):
-	# 			new_featVec = self.m_features[i].Eval(s.GetSample(j))
-	# 			self.m_featVec.append(new_featVec)
-	# 		featVec[j, :] = self.m_featVec
+	# 		self.featList = []
+	# 		for i in range(self.featureCount):
+	# 			new_featVec = self.features[i].Eval(s.GetSample(j))
+	# 			self.featList.append(new_featVec)
+	# 		featVec[j, :] = self.featList
 			# print("in haarfeatures.Eval, j = : ", j)
 			# print(featVec[j, :])
 			# print("")

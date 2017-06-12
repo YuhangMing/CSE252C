@@ -27,9 +27,10 @@ class LinearKernel(Kernel):
 
 
 class GaussianKernel(Kernel):
+    ## self.sigma -> self.sigma
     def __init__(self, sigma):
         Kernel.__init__(self)
-        self.m_sigma = sigma
+        self.sigma = sigma
 
     def Eval(self, x1, x2=None):
         if x2 is not None:
@@ -40,10 +41,10 @@ class GaussianKernel(Kernel):
             x11 = np.array(x1)
             x22 = np.array(x2)
             norm_val = (np.linalg.norm(x11 - x22)) ** 2
-            # print(-1 * float(self.m_sigma))
+            # print(-1 * float(self.sigma))
             # print(norm_val)
-            return np.exp(-1 * float(self.m_sigma) * norm_val)
-            # inner = map(lambda d: -1*float(self.m_sigma)*d, (x1-x2))
+            return np.exp(-1 * float(self.sigma) * norm_val)
+            # inner = map(lambda d: -1*float(self.sigma)*d, (x1-x2))
             # return np.exp(np.linalg.norm(inner))
         else:
             return 1.0
@@ -83,19 +84,21 @@ class Chi2Kernel(Kernel):
 
 #complete    
 class MultiKernel(Kernel):
+    ## self.m_n -> self.numKernel
+    ## self.m_norm -> self.norm
+    ## self.m_kernels -> self.kernels
+    ## self.m_counts -> self.counts
     def __init__(self, kernels, featureCounts):
         Kernel.__init__(self)
-        self.m_n, self.m_norm, self.m_kernels, self.m_counts = len(kernels), 1.0/len(kernels), kernels, featureCounts
+        self.numKernel, self.norm, self.kernels, self.counts = len(kernels), 1.0/len(kernels), kernels, featureCounts
 
     def Eval(self, x1, x2=None):
         total, start = 0.0, 0.0
-        for i in range(self.m_n):
-            c = self.m_counts[i]
+        for i in range(self.numKernel):
+            c = self.counts[i]
             if x2 is not None:
-                total += self.m_norm * self.m_kenerls[i].Eval(x1[start:start+c], x2[start:start+c])
+                total += self.norm * self.kernels[i].Eval(x1[start:start+c], x2[start:start+c])
             else:
-                total += self.m_norm * self.m_kenerls[i].Eval(x1[start:start+c])
+                total += self.norm * self.kernels[i].Eval(x1[start:start+c])
             start+=c
         return total
-
-

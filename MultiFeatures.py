@@ -12,9 +12,11 @@ from Rect import Rect
 
 
 class MultiFeatures(Features):
+	## self.m_features -> self.features
+	## self.m_featVec -> self.featList
 	def __init__(self, features):
 		Features.__init__(self)
-		self.m_features = features
+		self.features = features
 		d = 0
 		for i in range(len(features)):
 			d += features[i].GetCount()
@@ -22,7 +24,7 @@ class MultiFeatures(Features):
 
 	def UpdateFeature(self, sam):
 		start = 0
-		for i in range(len(self.m_features)):
-			n = self.m_features[i].GetCount()
-			self.m_featVec[start:start+n] = self.m_features[i].Eval(sam)
+		for i in range(len(self.features)):
+			n = self.features[i].GetCount()
+			self.featList[start:start+n] = self.features[i].Eval(sam)
 			start += n

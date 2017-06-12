@@ -11,28 +11,32 @@ from Rect import Rect
 sys.path.append('./ImageRep.py')
 from ImageRep import ImageRep
 
+
+## self.m_image -> self.image
+## self.m_roi -> self.roi
+## self.m_rects -> self.rects
 class Sample:
     def __init__(self, image, roi):
-        self.m_image = image
-        self.m_roi = roi
+        self.image = image
+        self.roi = roi
     def GetImage(self):
-        return self.m_image
+        return self.image
     def GetROI(self):
-        return self.m_roi
+        return self.roi
     def GetSelf(self):
         return self
     
 class MultiSample:
     def __init__(self, image, rects):
-        self.m_image = image
-        self.m_rects = rects
+        self.image = image
+        self.rects = rects
     def GetSelf(self):
         return self
     def GetImage(self):
-        return self.m_image
+        return self.image
     def GetRects(self):
-        return self.m_rects
+        return self.rects
     def GetSample(self, i):
-        return Sample(self.m_image, self.m_rects[i])
+        return Sample(self.image, self.rects[i])
     
 

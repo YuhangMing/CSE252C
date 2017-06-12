@@ -4,28 +4,30 @@ import numpy as np
 sys.path.append('./Sample.py')
 from Sample import Sample
 
+
 class Features:
+    # self.m_featureCount -> self.featureCount
+    # self.m_featVec -> self.featList
     def __init__(self):
-        self.m_featureCount = 0
-        self.m_featVec = []
+        self.featureCount = 0
+        self.featList = []
 
     def SetCount(self, c):
-        self.m_featureCount = c
-        self.m_featVec = [0]*c
+        self.featureCount = c
+        self.featList = [0]*c
 
     def GetCount(self):
-        return self.m_featureCount
+        return self.featureCount
 
     def UpdateFeature(self, sam):
         pass
 
     # s - multisample
-    def Eval(self, s, featVecs=None):
-        if featVecs is None:
+    def Eval(self, s, featLists=None):
+        if featLists is None:
             self.UpdateFeature(s)
-            return self.m_featVec
+            return self.featList
         else:
             # ???
             for i in range(len(s.GetRects())):
-                featVecs.append(self.Eval(s.GetSample(i)))
-
+                featLists.append(self.Eval(s.GetSample(i)))

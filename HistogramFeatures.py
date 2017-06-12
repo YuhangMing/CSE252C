@@ -13,6 +13,8 @@ from Rect import Rect
 kNumBins, kNumLevels, kNumCellsX, kNumCellsY = 16, 4, 3, 3
 
 class HistogramFeatures(Features):
+    ## self.featList -> self.featList
+    ## self.
     def __init__(self, conf):
         Features.__init__(self)
         nc = 0
@@ -23,7 +25,7 @@ class HistogramFeatures(Features):
 
     def UpdateFeature(self, sam):
         rect = sam.GetROI()
-        self.m_featVec = [0 for x in self.m_featVec]
+        self.featList = [0 for x in self.featList]
         histind = 0
         for i in range(kNumLevels):
             nc= i + 1
@@ -34,13 +36,13 @@ class HistogramFeatures(Features):
                 for ix in range(nc):
                     cell.SetXMin(sam.GetROI().XMin()+ix*w)
                     hist = sam.GetSelf().m_image.Hist(cell)
-                    self.m_featVec[histind*kNumBins:(histind+1)*kNumBins] = hist[:]
+                    self.featList[histind*kNumBins:(histind+1)*kNumBins] = hist[:]
                     histind+=1
-        # tmp_arr = np.array(self.m_featVec)
+        # tmp_arr = np.array(self.featList)
         # tmp_arr/= histind
-        # self.m_featVec = tmp_arr.tolist()
-        self.m_featVec = [x/histind for x in self.m_featVec]
-        # self.m_featVec /= histind
+        # self.featList = tmp_arr.tolist()
+        self.featList = [x/histind for x in self.featList]
+        # self.featList /= histind
 
 
 
