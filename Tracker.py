@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#:?:?!/usr/bin/env python
 import numpy as np
 import cv2
 
@@ -36,15 +36,27 @@ class Tracker:
     def Reset(self):
         self.initialized = False
         self.needIntegImg = False
+        self.needIntegHist = False
         self.bb = None
         self.pLearner = None
         self.features = []
         self.kernels = []
         featureCounts = []
+        numFeatures = self.config.features.size()
+            
+
         for feat in self.config.features:
-            # TODO uncomment this once HaarFeatures is ready
-            self.features.append(HaarFeatures(self.config))
+            feaType = feat.featureName
+            if feaType == 'haar':
+                self.features.append(HaarFeatures(self.config))
+                self.needIntegImg = True
+            elif featype == 'raw':
+                self.features.append(RawFeatures(self.config))
+            elif feaType == 'histogram':
+                self.features.append(HistogramFeatures(m_config));
+                self.needIntegHist = True
             featureCounts.append(self.features[-1].GetCount())
+
             kerType = feat.kernelName
             if kerType == 'linear':
                 self.kernels.append(Kernels.LinearKernel())
@@ -54,27 +66,33 @@ class Tracker:
                 self.kernels.append(Kernels.IntersectionKernel())
             elif kerType == 'chi2':
                 self.kernels.append(Kernels.Chi2Kernel())
-            # this should run for 1 iteration since we only use Haar Feature
+
+        if (numFeatures > 1):
+            mf = MultiFeature(self.features)
+            self.features.append(mf)   
+            mk = MultiKernel(self.kernels, featureCount)
+            self.kernels.append(mk)
 
         self.pLearner = LaRank(self.config, self.features[-1], self.kernels[-1])
         
 
     def Track(self, frame):
         #img = IntegImg(frame)
-        img = ImageRep(frame, True, False, False)
+        img = ImageRep(frame, self.needIntegImg, self.needIntegHist, False)
         s = Sampler()
         rects = s.PixelSamples(self.bb, self.config.searchRadius)
-        print("sample size %f" % len(rects))
+        #print("sample size %f" % len(rects))
         keptRects = []
         for rect in rects:
             if( rect.isInside(img.GetRect()) ):
                 keptRects.append(rect)
 
-        print("kept %f rects" % len(keptRects)) 
+        #print("kept %f rects" % len(keptRects)) 
         sample  = MultiSample(img, keptRects)
+        #print("Got Samples :)") 
         scores = []
         self.pLearner.Eval(sample, scores)
-        print("finished evaluation")	
+        #print("finished evaluation")	
         
         bestScore = max(scores)
         try:
@@ -99,6 +117,8 @@ class Tracker:
         sample = MultiSample(img, keptRects)
         self.pLearner.Update(sample, 0)
 
+
+'''
 if __name__ == "__main__":
     c = Config("./config.txt")
     t = Tracker(c)
@@ -168,4 +188,4 @@ if __name__ == "__main__":
     # cv2.waitKey(0)
     cv2.destroyWindow("preview")
     
-    
+''' 
