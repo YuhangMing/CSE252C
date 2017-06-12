@@ -26,8 +26,6 @@ class Features:
             return self.m_featVec
         else:
             # ???
-            featVecs = []
             for i in range(len(s.GetRects())):
-                print(self.Eval(s.GetSample(i)))
                 featVecs.append(self.Eval(s.GetSample(i)))
 
