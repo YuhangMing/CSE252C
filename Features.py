@@ -27,5 +27,5 @@ class Features:
         else:
             # ???
             featVecs = []
-            for i in (len(featVecs)):
+            for i in (len(s.GetRects())):
                 featVecs.append(self.Eval(s.GetSample(i)))
