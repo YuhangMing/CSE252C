@@ -27,7 +27,6 @@ class LinearKernel(Kernel):
 
 
 class GaussianKernel(Kernel):
-    ## self.sigma -> self.sigma
     def __init__(self, sigma):
         Kernel.__init__(self)
         self.sigma = sigma
@@ -84,21 +83,20 @@ class Chi2Kernel(Kernel):
 
 #complete    
 class MultiKernel(Kernel):
-    ## self.m_n -> self.numKernel
-    ## self.m_norm -> self.norm
-    ## self.m_kernels -> self.kernels
-    ## self.m_counts -> self.counts
     def __init__(self, kernels, featureCounts):
         Kernel.__init__(self)
         self.numKernel, self.norm, self.kernels, self.counts = len(kernels), 1.0/len(kernels), kernels, featureCounts
 
     def Eval(self, x1, x2=None):
         total, start = 0.0, 0.0
-        for i in range(self.numKernel):
-            c = self.counts[i]
-            if x2 is not None:
+        if x2 is not None:
+            for i in range(self.numKernel):
+                c = self.counts[i]
                 total += self.norm * self.kernels[i].Eval(x1[start:start+c], x2[start:start+c])
-            else:
+                start+=c
+        else:
+            for i in range(self.numKernel):
+                c = self.counts[i]
                 total += self.norm * self.kernels[i].Eval(x1[start:start+c])
-            start+=c
+                start+=c
         return total

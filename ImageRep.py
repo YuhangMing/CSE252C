@@ -10,11 +10,6 @@ from Rect import Rect
 
 kNumBins = 16;
 class ImageRep:
-    ## self.m_channels -> self.channels
-    ## self.m_rect -> self.rect
-    ## self.m_images -> self.images
-    ## self.m_integralImages -> self.integralImages
-    ## self.m_integralHistImages -> self.integralHistImages
     def __init__(self, image, computeIntegral=True, computeIntegralHist=False, colour=False):
         # print("ImageRep.init")
         # print(computeIntegral, computeIntegralHist, colour)
@@ -22,7 +17,7 @@ class ImageRep:
         self.rect = Rect(0, 0, image.shape[1], image.shape[0])
         # print(self.rect.XMin())
         self.images, self.integralImages, self.integralHistImages = [],[],[]
-        
+
         for i in range(self.channels):
             # self.images.append(cv.createMat(image.shape[0], image.shape[1], cv.CV_8UC1))
             self.images.append(np.zeros((image.shape[0], image.shape[1]), np.uint8))
@@ -33,7 +28,7 @@ class ImageRep:
                 for j in range(kNumBins):
                     # self.integralHistImages.append(cv.createMat(image.shape[0]+1, image.shape[1]+1, cv.CV_32SC1))
                     self.integralHistImages.append(np.zeros((image.shape[0]+1, image.shape[1]+1), np.float32))
-                            
+
         if len(image.shape) == 2:
             channels = 1
         else:
@@ -50,12 +45,12 @@ class ImageRep:
                 self.images[0] = cv.cvtColor(image, cv.COLOR_RGB2GRAY)
             elif channels == 1:
                 np.copyto(self.images[0], image)
-        
+
         if computeIntegral:
             for i in range(self.channels):
                 self.images[i] = cv.equalizeHist(self.images[i])
                 self.integralImages[i] = cv.integral(self.images[i])
-        
+
         if computeIntegralHist:
             # tmp = cv.createMat(image.shape[0], image.shape[1], cv.CV_8UC1)
             # tmp[:] = 0
@@ -66,14 +61,14 @@ class ImageRep:
                         sbin = int(float(self.images[0][y][x])/256.0*kNumBins)
                         tmp[y][x] = 1 if sbin == j else 0
                 self.integralHistImages[j] = cv.integral(tmp)
-   
-    
+
+
     def Sum(self, rRect, channel=0):
         #rRect.printStr()
         #print self.images[0].shape
         assert(rRect.XMin()>=0 and rRect.YMin()>=0 and                rRect.XMax()<=self.images[0].shape[1] and rRect.YMax()<=self.images[0].shape[0])
         return self.integralImages[channel][rRect.YMin()][rRect.XMin()] +                 self.integralImages[channel][rRect.YMax()][rRect.XMax()] -                 self.integralImages[channel][rRect.YMax()][rRect.XMin()] -                 self.integralImages[channel][rRect.YMin()][rRect.XMax()]
-    
+
     def Hist(self, rRect):
         assert(rRect.XMin()>=0 and rRect.YMin()>=0 and                 rRect.XMax()<=self.images[0].shape[1] and rRect.YMax()<=self.images[0].shape[0])
         norm = rRect.Area();
@@ -82,9 +77,9 @@ class ImageRep:
             total = self.integralHistImages[i][int(rRect.YMin())][int(rRect.XMin())] +                     self.integralHistImages[i][int(rRect.YMax())][int(rRect.XMax())] -                     self.integralHistImages[i][int(rRect.YMax())][int(rRect.XMin())] -                     self.integralHistImages[i][int(rRect.YMin())][int(rRect.XMax())]
             h[i] = float(total)/norm;
         return h
-    
+
     def GetImage(self, channel=0):
         return self.images[channel]
+
     def GetRect(self):
         return self.rect;
-

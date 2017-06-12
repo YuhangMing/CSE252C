@@ -6,8 +6,6 @@ from Sample import Sample
 
 
 class Features:
-    # self.m_featureCount -> self.featureCount
-    # self.m_featVec -> self.featList
     def __init__(self):
         self.featureCount = 0
         self.featList = []

@@ -12,8 +12,6 @@ from Rect import Rect
 
 
 class MultiFeatures(Features):
-	## self.m_features -> self.features
-	## self.m_featVec -> self.featList
 	def __init__(self, features):
 		Features.__init__(self)
 		self.features = features

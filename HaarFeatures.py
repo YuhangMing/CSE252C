@@ -50,10 +50,10 @@ class HaarFeatures(Features):
 						self.add_feature(new_feature)
 
 	def UpdateFeature(self, sample):
-		self.featList = []
-		for i in range(self.featureCount):
-			new_featList = self.features[i].Eval(sample)
-			self.featList.append(new_featList)
+		self.featList = list(map(lambda x: x.Eval(sample),self.features))
+		# for i in range(self.featureCount):
+			# new_featList = self.features[i].Eval(sample)
+			# self.featList.append(new_featList)
 			# self.add_featVec(new_featVec)
 		# print('length of m_featVec: '+str(len(self.featList)))
 		# return self.featList
