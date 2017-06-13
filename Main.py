@@ -226,6 +226,9 @@ def trackFrame(conf):
                 cv2.waitKey()
 
     score = totalOverlap / float(count)
+    print("##############################")
+    print("Final Overlap Score is: " + str(score))
+    print("##############################")
     fres.write('%.3f\n' % score)
     if not fres.closed:
         fres.close()
