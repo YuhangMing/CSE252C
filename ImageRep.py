@@ -66,15 +66,15 @@ class ImageRep:
     def Sum(self, rRect, channel=0):
         #rRect.printStr()
         #print self.images[0].shape
-        assert(rRect.XMin()>=0 and rRect.YMin()>=0 and                rRect.XMax()<=self.images[0].shape[1] and rRect.YMax()<=self.images[0].shape[0])
-        return self.integralImages[channel][rRect.YMin()][rRect.XMin()] +                 self.integralImages[channel][rRect.YMax()][rRect.XMax()] -                 self.integralImages[channel][rRect.YMax()][rRect.XMin()] -                 self.integralImages[channel][rRect.YMin()][rRect.XMax()]
+        assert(rRect.getX()>=0 and rRect.getY()>=0 and                rRect.getXMax()<=self.images[0].shape[1] and rRect.getYMax()<=self.images[0].shape[0])
+        return self.integralImages[channel][rRect.getY()][rRect.getX()] +                 self.integralImages[channel][rRect.getYMax()][rRect.getXMax()] -                 self.integralImages[channel][rRect.getYMax()][rRect.getX()] -                 self.integralImages[channel][rRect.getY()][rRect.getXMax()]
 
     def Hist(self, rRect):
-        assert(rRect.XMin()>=0 and rRect.YMin()>=0 and                 rRect.XMax()<=self.images[0].shape[1] and rRect.YMax()<=self.images[0].shape[0])
-        norm = rRect.Area();
+        assert(rRect.getX()>=0 and rRect.getY()>=0 and                 rRect.getXMax()<=self.images[0].shape[1] and rRect.getYMax()<=self.images[0].shape[0])
+        norm = rRect.getArea();
         h = [0]*kNumBins
         for i in range(kNumBins):
-            total = self.integralHistImages[i][int(rRect.YMin())][int(rRect.XMin())] +                     self.integralHistImages[i][int(rRect.YMax())][int(rRect.XMax())] -                     self.integralHistImages[i][int(rRect.YMax())][int(rRect.XMin())] -                     self.integralHistImages[i][int(rRect.YMin())][int(rRect.XMax())]
+            total = self.integralHistImages[i][int(rRect.getY())][int(rRect.getX())] +                     self.integralHistImages[i][int(rRect.getYMax())][int(rRect.getXMax())] -                     self.integralHistImages[i][int(rRect.getYMax())][int(rRect.getX())] -                     self.integralHistImages[i][int(rRect.getY())][int(rRect.getXMax())]
             h[i] = float(total)/norm;
         return h
 

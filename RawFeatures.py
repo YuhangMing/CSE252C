@@ -20,7 +20,7 @@ class RawFeatures(Features):
 
 	def UpdateFeature(self, sam):
 		rect = sam.GetROI()
-		original = sam.GetImage().GetImage(0)[int(rect.XMin()):int(rect.XMax())+1, int(rect.YMin()):int(rect.YMax())+1]
+		original = sam.GetImage().GetImage(0)[int(rect.getX()):int(rect.getXMax())+1, int(rect.getY()):int(rect.getYMax())+1]
 		self.patchImage = cv.resize(original,(self.patchImage.shape[1],self.patchImage.shape[0] ))
 		tmp = self.patchImage[:]
 		np.reshape(tmp, (1, kPatchSize**2))

@@ -18,8 +18,8 @@ GREEN = (60, 255, 60)
 
 
 def rectangle(rMat, rRect, rColour):
-    xmin, ymin, xmax, ymax = int(rRect.XMin()), int(
-        rRect.YMin()), int(rRect.XMax()), int(rRect.YMax())
+    xmin, ymin, xmax, ymax = int(rRect.getX()), int(
+        rRect.getY()), int(rRect.getXMax()), int(rRect.getYMax())
     cv2.rectangle(rMat, (xmin, ymin), (xmax, ymax), rColour)
 
 
@@ -147,7 +147,7 @@ def trackFrame(conf):
     if isFile(rectFilePath, 'rect') is False:
         return False
     rRect = getTrueRect(rectFilePath, startFrame)
-    initBB = Rect(rRect.XMin()*scaleW, rRect.YMin()*scaleH, rRect.Width()*scaleW, rRect.Height()*scaleH)
+    initBB = Rect(rRect.getX()*scaleW, rRect.getY()*scaleH, rRect.getWidth()*scaleW, rRect.getHeight()*scaleH)
 
     resultsPath = './' + conf.resultsPath
     if isFile(resultsPath, 'res') is False:
@@ -187,11 +187,11 @@ def trackFrame(conf):
 
             box = tracker.GetBox()
             rectangle(result, box, GREEN)
-            fRect = Rect(box.XMin() / scaleW, box.YMin() / scaleH, box.Width() / scaleW, box.Height() / scaleH)
-            fres.write('%.2f %.2f %.2f %.2f' % (fRect.XMin(), fRect.YMin(), fRect.Width(), fRect.Height()))
+            fRect = Rect(box.getX() / scaleW, box.getY() / scaleH, box.getWidth() / scaleW, box.getHeight() / scaleH)
+            fres.write('%.2f %.2f %.2f %.2f' % (fRect.getX(), fRect.getY(), fRect.getWidth(), fRect.getHeight()))
 
             tRect = getTrueRect(rectFilePath, frameid)
-            overlap = float(tRect.Overlap(fRect))
+            overlap = float(tRect.overlap(fRect))
             print 'true Rect: ',
             tRect.printStr()
             print 'tracker Rect: ',

@@ -31,8 +31,8 @@ class Sampler:
             for it in xrange(nt):
                 theta = it*tstep+phase
                 dx, dy = ir*rstep*math.cos(theta), ir*rstep*math.sin(theta)
-                fRect.SetXMin(centre.XMin() + dx)
-                fRect.SetYMin(centre.YMin() + dy)
+                fRect.setX(centre.getX() + dx)
+                fRect.setY(centre.getY() + dy)
                 samples.append(deepcopy(fRect))
         return samples
     
@@ -53,8 +53,8 @@ class Sampler:
                     continue
                 if halfSample and ((ix%2 is not 0) or (iy%2 is not 0)):
                     continue
-                iRect.SetXMin(int(centre.XMin()+ix))
-                iRect.SetYMin(int(centre.YMin()+iy))
+                iRect.setX(int(centre.getX()+ix))
+                iRect.setY(int(centre.getY()+iy))
                 samples.append(deepcopy(iRect))
         return samples
         

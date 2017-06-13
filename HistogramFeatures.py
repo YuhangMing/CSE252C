@@ -29,12 +29,12 @@ class HistogramFeatures(Features):
         histind = 0
         for i in range(kNumLevels):
             nc= i + 1
-            w, h = float(sam.GetROI().Width()/nc), float(sam.GetROI().Height()/nc)
+            w, h = float(sam.GetROI().getWidth()/nc), float(sam.GetROI().getHeight()/nc)
             cell = Rect(0.0, 0.0, w, h)
             for iy in range(nc):
-                cell.SetYMin(sam.GetROI().YMin()+iy*h)
+                cell.SetY(sam.GetROI().getY()+iy*h)
                 for ix in range(nc):
-                    cell.SetXMin(sam.GetROI().XMin()+ix*w)
+                    cell.SetXMin(sam.GetROI().getX()+ix*w)
                     hist = sam.GetSelf().image.Hist(cell)
                     self.featList[histind*kNumBins:(histind+1)*kNumBins] = hist[:]
                     histind+=1

@@ -24,46 +24,46 @@ class HaarFeature:
         self.fRect.initFromList(fRect)
         self.weights, self.rects = [], []
         if iType == 0:
-            self.rects.append(Rect(self.fRect.XMin(), self.fRect.YMin(), self.fRect.Width(), self.fRect.Height()/2.0))
-            self.rects.append(Rect(self.fRect.XMin(), self.fRect.YMin()+self.fRect.Height()/2.0, self.fRect.Width(), self.fRect.Height()/2.0))
+            self.rects.append(Rect(self.fRect.getX(), self.fRect.getY(), self.fRect.getWidth(), self.fRect.getHeight()/2.0))
+            self.rects.append(Rect(self.fRect.getX(), self.fRect.getY()+self.fRect.getHeight()/2.0, self.fRect.getWidth(), self.fRect.getHeight()/2.0))
             self.weights.append(1.0)
             self.weights.append(-1.0)
             self.factor = 255.0/2.0
         elif iType == 1:
-            self.rects.append(Rect(self.fRect.XMin(), self.fRect.YMin(), self.fRect.Width()/2.0, self.fRect.Height()))
-            self.rects.append(Rect(self.fRect.XMin()+self.fRect.Width()/2.0, self.fRect.YMin(), self.fRect.Width()/2.0, self.fRect.Height()))
+            self.rects.append(Rect(self.fRect.getX(), self.fRect.getY(), self.fRect.getWidth()/2.0, self.fRect.getHeight()))
+            self.rects.append(Rect(self.fRect.getX()+self.fRect.getWidth()/2.0, self.fRect.getY(), self.fRect.getWidth()/2.0, self.fRect.getHeight()))
             self.weights.append(1.0)
             self.weights.append(-1.0)
             self.factor = 255.0/2.0
         elif iType == 2:
-            self.rects.append(Rect(self.fRect.XMin(), self.fRect.YMin(), self.fRect.Width()/3.0, self.fRect.Height()))
-            self.rects.append(Rect(self.fRect.XMin()+self.fRect.Width()/3.0, self.fRect.YMin(), self.fRect.Width()/3.0, self.fRect.Height()))
-            self.rects.append(Rect(self.fRect.XMin()+self.fRect.Width()*2.0/3.0, self.fRect.YMin(), self.fRect.Width()/3.0, self.fRect.Height()))
+            self.rects.append(Rect(self.fRect.getX(), self.fRect.getY(), self.fRect.getWidth()/3.0, self.fRect.getHeight()))
+            self.rects.append(Rect(self.fRect.getX()+self.fRect.getWidth()/3.0, self.fRect.getY(), self.fRect.getWidth()/3.0, self.fRect.getHeight()))
+            self.rects.append(Rect(self.fRect.getX()+self.fRect.getWidth()*2.0/3.0, self.fRect.getY(), self.fRect.getWidth()/3.0, self.fRect.getHeight()))
             self.weights.append(1.0)
             self.weights.append(-2.0)
             self.weights.append(1.0)
             self.factor = 255.0*2.0/3.0
         elif iType == 3:
-            self.rects.append(Rect(self.fRect.XMin(), self.fRect.YMin(), self.fRect.Width(), self.fRect.Height()/3.0))
-            self.rects.append(Rect(self.fRect.XMin(), self.fRect.YMin()+self.fRect.Height()/3.0, self.fRect.Width(), self.fRect.Height()/3.0))
-            self.rects.append(Rect(self.fRect.XMin(), self.fRect.YMin()+self.fRect.Height()*2.0/3.0, self.fRect.Width(), self.fRect.Height()/3.0))
+            self.rects.append(Rect(self.fRect.getX(), self.fRect.getY(), self.fRect.getWidth(), self.fRect.getHeight()/3.0))
+            self.rects.append(Rect(self.fRect.getX(), self.fRect.getY()+self.fRect.getHeight()/3.0, self.fRect.getWidth(), self.fRect.getHeight()/3.0))
+            self.rects.append(Rect(self.fRect.getX(), self.fRect.getY()+self.fRect.getHeight()*2.0/3.0, self.fRect.getWidth(), self.fRect.getHeight()/3.0))
             self.weights.append(1.0)
             self.weights.append(-2.0)
             self.weights.append(1.0)
             self.factor = 255.0*2.0/3.0
         elif iType == 4:
-            self.rects.append(Rect(self.fRect.XMin(), self.fRect.YMin(), self.fRect.Width()/2.0, self.fRect.Height()/2.0))
-            self.rects.append(Rect(self.fRect.XMin()+self.fRect.Width()/2.0, self.fRect.YMin()+self.fRect.Height()/2.0, self.fRect.Width()/2.0, self.fRect.Height()/2.0))
-            self.rects.append(Rect(self.fRect.XMin(), self.fRect.YMin()+self.fRect.Height()/2.0, self.fRect.Width()/2.0, self.fRect.Height()/2.0))
-            self.rects.append(Rect(self.fRect.XMin()+self.fRect.Width()/2.0, self.fRect.YMin(), self.fRect.Width()/2.0, self.fRect.Height()/2.0))
+            self.rects.append(Rect(self.fRect.getX(), self.fRect.getY(), self.fRect.getWidth()/2.0, self.fRect.getHeight()/2.0))
+            self.rects.append(Rect(self.fRect.getX()+self.fRect.getWidth()/2.0, self.fRect.getY()+self.fRect.getHeight()/2.0, self.fRect.getWidth()/2.0, self.fRect.getHeight()/2.0))
+            self.rects.append(Rect(self.fRect.getX(), self.fRect.getY()+self.fRect.getHeight()/2.0, self.fRect.getWidth()/2.0, self.fRect.getHeight()/2.0))
+            self.rects.append(Rect(self.fRect.getX()+self.fRect.getWidth()/2.0, self.fRect.getY(), self.fRect.getWidth()/2.0, self.fRect.getHeight()/2.0))
             self.weights.append(1.0)
             self.weights.append(1.0)
             self.weights.append(-1.0)
             self.weights.append(-1.0)
             self.factor = 255.0/2.0
         elif iType == 5:
-            self.rects.append(Rect(self.fRect.XMin(), self.fRect.YMin(), self.fRect.Width(), self.fRect.Height()))
-            self.rects.append(Rect(self.fRect.XMin()+self.fRect.Width()/4.0, self.fRect.YMin()+self.fRect.Height()/4.0, self.fRect.Width()/2.0, self.fRect.Height()/2.0))
+            self.rects.append(Rect(self.fRect.getX(), self.fRect.getY(), self.fRect.getWidth(), self.fRect.getHeight()))
+            self.rects.append(Rect(self.fRect.getX()+self.fRect.getWidth()/4.0, self.fRect.getY()+self.fRect.getHeight()/4.0, self.fRect.getWidth()/2.0, self.fRect.getHeight()/2.0))
             self.weights.append(1.0)
             self.weights.append(-4.0)
             self.factor = 255.0*3.0/4.0
@@ -77,12 +77,12 @@ class HaarFeature:
 	#print(len(self.rects))
         for i in range(len(self.rects)):
             fRect = self.rects[i]
-            samRect = Rect(int(roi.XMin()+fRect.XMin()*roi.Width()+0.5), int(roi.YMin()+fRect.YMin()*roi.Height()+0.5), int(fRect.Width()*roi.Width()), int(fRect.Height()*roi.Height()))
+            samRect = Rect(int(roi.getX()+fRect.getX()*roi.getWidth()+0.5), int(roi.getY()+fRect.getY()*roi.getHeight()+0.5), int(fRect.getWidth()*roi.getWidth()), int(fRect.getHeight()*roi.getHeight()))
             value += self.weights[i]*image.Sum(samRect)
 	'''
-    	samRects = list(map(lambda r: Rect(int(roi.XMin()+r.XMin()*roi.Width()+0.5), int(roi.YMin()+r.YMin()*roi.Height()+0.5), int(r.Width()*roi.Width()), int(r.Height()*roi.Height())), self.rects))
+    	samRects = list(map(lambda r: Rect(int(roi.getX()+r.getX()*roi.getWidth()+0.5), int(roi.getY()+r.getY()*roi.getHeight()+0.5), int(r.getWidth()*roi.getWidth()), int(r.getHeight()*roi.getHeight())), self.rects))
 
     	srs = list(map(lambda sr: image.Sum(sr), samRects))
     	value = np.dot(np.array(self.weights), np.array(srs))
         
-        return value / (self.factor*roi.Area()*self.fRect.Area())
+        return value / (self.factor*roi.getArea()*self.fRect.getArea())

@@ -275,7 +275,7 @@ class LaRank:
 			r = Rect()
 			r.initFromRect(rects[i])
 			# represent rectangle in the coordinate frame of the center rectangle
-			r.Translate(-center.getX(), -center.getY())
+			r.translate(-center.getX(), -center.getY())
 			sp.add_yv(r)
 			if (not(self.config_file.quietMode) and self.config_file.debugMode):
 				im = np.zeros((kTileSize, kTileSize), np.uint8)
