@@ -12,19 +12,13 @@ from Features import Features
 kSystematicFeatureCount = 192
 
 class HaarFeatures(Features):
-	
-	
 
-	## self.m_features -> self.features
-	## self.m_featureCount -> self.featureCount
-	# self.m_featVec -> self.featList
 	def __init__(self, conf):
 		self.features = []
 		# self.featList = []		############# delete
-		# Skip Features Class in original C++ Code !!!!!!!!!!
 		# SetCount(kSystematicFeatureCount)
 		self.featureCount = kSystematicFeatureCount
-		# # m_featureCount = kSystematicFeatureCount
+		# featureCount = kSystematicFeatureCount
 		self.GenerateSystematic()
 
 	def add_feature(self, new_feature):
@@ -58,10 +52,8 @@ class HaarFeatures(Features):
 		# print('length of m_featVec: '+str(len(self.featList)))
 		# return self.featList
 
-
 	# def EvalOne(self, s):
 	# 	return self.UpdateFeatureVector(s)
-
 
 	# def Eval(self, s, featVec):
 	# 	print("haarfeatures")
