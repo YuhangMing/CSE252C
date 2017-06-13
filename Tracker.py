@@ -116,7 +116,7 @@ class Tracker:
         for i, rect in enumerate(rects):
             if i < 1:
                 continue
-            if rect.IsInside(img.GetRect()) :
+            if rect.isInside(img.GetRect()) :
                 keptRects.append(rect)
         sample = MultiSample(img, keptRects)
         self.pLearner.Update(sample, 0)
