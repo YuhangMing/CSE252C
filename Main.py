@@ -83,28 +83,32 @@ def trackCamera(conf):
             rectangle(result, box, GREEN)
 
         # print "hello image"
-
         if not conf.quietMode:
+            # display menu
+            if frameid == startFrame:
+                print("#########################################")
+                print("MENU")
+                print("Press \"i\" to start tracking in camera mode")
+                print("Press \"q\" or esc to escape")
+                print("Press \"p\" to keep tracking")
+                print("Press any other key to track 1 frame")
+                print("#########################################")
+
             # print 'show image'
             cv2.imshow("result", result)
             if paused:
                 key = cv2.waitKey() & 0xFF
-                print("manual")
-                print("press i to start tracking in camera mode")
-                print("press q or esc to escape")
-                print("press p to keep tracking")
-                print("press any other key to track 1 frame")
             else:
                 key = cv2.waitKey(1) & 0xFF
             if key != -1:
-                if key == 27 or key == 113: # esc q
+                if key == 27 or key == 81 or key == 113: # esc q
                     break
-                elif key == 112: # p
+                elif key == 80 or key == 112: # p
                     paused = not paused
-                elif key == 105: # i
+                elif key == 73 or key == 105: # i
                     doInitialize = True
                     print 'doInitialize'
-            if conf.debugMode and frameid == endFrame:
+            if frameid == endFrame:
                 print 'End of sequence, press any key to exit.'
                 cv2.waitKey()
 
@@ -165,7 +169,7 @@ def trackFrame(conf):
     rectFilePath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + '/groundtruth_rect.txt'
 
     for frameid in xrange(startFrame, endFrame + 1):
-        print("Processing frame #" + str(frameid))
+        print("Processing frame " + str(frameid) +"/" + str(endFrame))
         imgFramePath = './' + conf.sequenceBasePath + '/' + conf.sequenceName + ('/img/%04d.jpg' % int(frameid))
         if isFile(imgFramePath, 'imgFrame') is False:
             return False
@@ -177,7 +181,7 @@ def trackFrame(conf):
         result = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
 
         if frameid == startFrame:
-            initBB.printStr()
+            # initBB.printStr()
             tracker.Initialize(frame, initBB)
 
         if tracker.IsInitialized():
@@ -192,43 +196,50 @@ def trackFrame(conf):
 
             tRect = getTrueRect(rectFilePath, frameid)
             overlap = float(tRect.overlap(fRect))
-            print 'true Rect: ',
-            tRect.printStr()
-            print 'tracker Rect: ',
-            fRect.printStr()
+            # print 'true Rect: ',
+            # tRect.printStr()
+            # print 'tracker Rect: ',
+            # fRect.printStr()
             print 'overlap: %.2f' % overlap
             count, totalOverlap = count + 1, totalOverlap + overlap
             fres.write(' %.2f\n' % overlap)
 
         # print "hello image"
         if not conf.quietMode:
+            # display menu
+            if frameid == startFrame:
+                print("#########################################")
+                print("MENU")
+                print("Press \"i\" to start tracking in camera mode")
+                print("Press \"q\" or esc to escape")
+                print("Press \"p\" to keep tracking")
+                print("Press any other key to track 1 frame")
+                print("#########################################")
+
             # print 'show image'
             cv2.imshow("result", result)
             if paused:
                 key = cv2.waitKey() & 0xFF
-                print("manual")
-                print("press i to start tracking in camera mode")
-                print("press q or esc to escape")
-                print("press p to keep tracking")
-                print("press any other key to track 1 frame")
             else:
                 key = cv2.waitKey(1) & 0xFF
             if key != -1:
-                if key == 27 or key == 113: # esc q
+                if key == 27 or key == 81 or key == 113: # esc q
                     break
-                elif key == 112: # p
+                elif key == 80 or key == 112: # p
                     paused = not paused
-                elif key == 105: # i
+                elif key == 73 or key == 105: # i
                     doInitialize = True
                     print 'doInitialize'
-            if conf.debugMode and frameid == endFrame:
+            if frameid == endFrame:
                 print 'End of sequence, press any key to exit.'
                 cv2.waitKey()
 
     score = totalOverlap / float(count)
-    print("##############################")
+    print("")
+    print("######################################")
     print("Final Overlap Score is: " + str(score))
-    print("##############################")
+    print("######################################")
+    print("")
     fres.write('%.3f\n' % score)
     if not fres.closed:
         fres.close()
