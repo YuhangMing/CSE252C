@@ -132,7 +132,7 @@ class Tracker:
             if i < 1:
                 #always keep the original frame
                 usable_rects.append(sampled_rects[0])
-            elif rect.IsInside(img.GetRect()) :
+            elif rect.isInside(img.GetRect()) :
                 # make sure other sampled frames are inside the image
                 usable_rects.append(rect)
 	
