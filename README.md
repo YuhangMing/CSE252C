@@ -3,7 +3,7 @@ Visual tracking
 
 To run the program:
 
-->Download all .py files in a folder
+->Download all files in a folder
 
 ->Change the "startframe" and "endframe" in /data/Girl/frame.txt
 
