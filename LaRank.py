@@ -261,7 +261,7 @@ class LaRank:
 				# update gradients
 				for i in range(len(self.svs)):
 					svi = self.svs[i]
-					svi.g = -(1 - svi.x.yv[svi.y].Overlap(svi.x.yv[svi.x.y])) - self.CalF(svi.x.x[svi.y], svi.x.yv[svi.y])
+					svi.g = -(1 - svi.x.yv[svi.y].overlap(svi.x.yv[svi.x.y])) - self.CalF(svi.x.x[svi.y], svi.x.yv[svi.y])
 
 	# Update Discriminant Function #### CORE ####
 	def Update(self, sample, y):
