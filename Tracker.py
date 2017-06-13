@@ -1,4 +1,4 @@
-#:?:?!/usr/bin/env python
+#!/usr/bin/env python
 import numpy as np
 import cv2
 
@@ -15,111 +15,129 @@ from MultiFeatures import MultiFeatures
 import Kernels
 from LaRank import LaRank
 
+# Tracker class
+# Puts all the pieces together
 class Tracker:
     def __init__(self, config):
         self.config = config
         self.Reset()
  
+    # Initialize used for the initial frame
     def Initialize(self, frame, rect):
-        r = Rect()
-        self.bb = r.initFromRect(rect)
-        #image = IntegImg(frame) # orImgRep
+        self.box = Rect()
+        self.box.initFromRect(rect)
         img = ImageRep(frame, self.needIntegImg, self.needIntegHist, False)
-        # print("integral Image")
-        # print(img)
         self.UpdateLearner(img)
         self.initialized = True
 
+    # check if the tracker is already initialized
     def IsInitialized(self):
         return self.initialized
          
+    # returns the current position of the bound box
     def GetBox(self):
-        return self.bb
+        return self.box
 
+    # Add features
+    def AddFeature(self, fname):
+        if fname == 'haar':
+            self.features.append(HaarFeatures(self.config))
+            self.needIntegImg = True
+        elif fname == 'raw':
+            self.features.append(RawFeatures(self.config))
+        elif fname == 'histogram':
+            self.needIntegHist = True
+            self.features.append(HistogramFeatures(self.config));
+        
+    # Add kernel
+    def AddKernel(self, kname, feature):
+        if kname == 'linear':
+            self.kernels.append(Kernels.LinearKernel())
+        elif kname == 'gaussian':
+            self.kernels.append(Kernels.GaussianKernel(feature.params[0]))
+        elif kname == 'intersection':
+            self.kernels.append(Kernels.IntersectionKernel())
+        elif kname == 'chi2':
+            self.kernels.append(Kernels.Chi2Kernel())
+        
+    # reset, useful if the tracker is not initialized properly
     def Reset(self):
         self.initialized = False
-        self.needIntegImg = False
-        self.needIntegHist = False
-        self.bb = None
-        self.pLearner = None
+        self.box = None
         self.features = []
         self.kernels = []
+        self.needIntegImg = False
+        self.needIntegHist = False
+        self.learner = None
+        
+	# keep a list of feature counts
         featureCounts = []
-        numFeatures = len(self.config.features)
-            
 
+        # check for number of features in the config file
+        # should only run for 1 iteration for our experiemnt (Haar only) 
         for feat in self.config.features:
-            feaType = feat.featureName
-            if feaType == 'haar':
-                self.features.append(HaarFeatures(self.config))
-                self.needIntegImg = True
-            elif feaType == 'raw':
-                self.features.append(RawFeatures(self.config))
-            elif feaType == 'histogram':
-                self.needIntegHist = True
-                self.features.append(HistogramFeatures(self.config));
-                
+            self.AddFeature(feat.featureName)
+            self.AddKernel(feat.kernelName, feat)
             featureCounts.append(self.features[-1].GetCount())
 
-            kerType = feat.kernelName
-            if kerType == 'linear':
-                self.kernels.append(Kernels.LinearKernel())
-            elif kerType == 'gaussian':
-                self.kernels.append(Kernels.GaussianKernel(feat.params[0]))
-            elif kerType == 'intersection':
-                self.kernels.append(Kernels.IntersectionKernel())
-            elif kerType == 'chi2':
-                self.kernels.append(Kernels.Chi2Kernel())
+        # use combined feature/kernel when there are multiple
+        if (len(self.config.features) > 1):
+            self.features.append(MultiFeatures(self.features))
+            self.kernels.append(Kernels.MultiKernel(self.kernels, featureCounts))
 
-        if (numFeatures > 1):
-            mf = MultiFeatures(self.features)
-            self.features.append(mf)   
-            mk = Kernels.MultiKernel(self.kernels, featureCounts)
-            self.kernels.append(mk)
-
-        self.pLearner = LaRank(self.config, self.features[-1], self.kernels[-1])
+        self.learner = LaRank(self.config, self.features[-1], self.kernels[-1])
         
-
+    # Track the object of interest
     def Track(self, frame):
-        #img = IntegImg(frame)
         img = ImageRep(frame, self.needIntegImg, self.needIntegHist, False)
+	
+	# dense sampling for tracking process
         s = Sampler()
-        rects = s.PixelSamples(self.bb, self.config.searchRadius)
-        #print("sample size %f" % len(rects))
-        keptRects = []
-        for rect in rects:
-            if( rect.isInside(img.GetRect()) ):
-                keptRects.append(rect)
+        sampled_rects = s.PixelSamples(self.box, self.config.searchRadius)
 
-        #print("kept %f rects" % len(keptRects)) 
-        sample  = MultiSample(img, keptRects)
-        #print("Got Samples :)") 
+	# check if the box is still within the image
+        usable_rects = []
+        for rect in sampled_rects:
+            if( rect.isInside(img.GetRect()) ):
+                usable_rects.append(rect)
+
+	# Make multiSample object 
+	# This step is really expensive for some reason 
+        # TODO optimize if possible
+        msample  = MultiSample(img, usable_rects)
         scores = []
-        self.pLearner.Eval(sample, scores)
-        #print("finished evaluation")	
+        self.learner.Eval(msample, scores)
         
-        bestScore = max(scores)
+        # find the best box
+        best_score = max(scores)
         try:
-            bestIndex = scores.index(bestScore)
+            bestIndex = scores.index(best_score)
         except ValueError:
             bestIndex = -1
 
+	# Update bounding box with the with best box
         if not bestIndex == -1:
-            self.bb = keptRects[bestIndex]
+            self.box = usable_rects[bestIndex]
             self.UpdateLearner(img)
 
+    # Update Learner with new support vectors
     def UpdateLearner(self, img):
+        # sparse sampling for unpdating Learner
         s = Sampler()
-        rects = s.RadialSamples(self.bb, 2*self.config.searchRadius, 5, 16)
-        keptRects = []
-        keptRects.append(rects[0])
-        for i, rect in enumerate(rects):
+        sampled_rects = s.RadialSamples(self.box, 2*self.config.searchRadius, 5, 16)
+
+	# rect to keep
+        usable_rects = []
+        for i, rect in enumerate(sampled_rects):
             if i < 1:
-                continue
-            if rect.IsInside(img.GetRect()) :
-                keptRects.append(rect)
-        sample = MultiSample(img, keptRects)
-        self.pLearner.Update(sample, 0)
+                #always keep the original frame
+                usable_rects.append(sampled_rects[0])
+            elif rect.IsInside(img.GetRect()) :
+                # make sure other sampled frames are inside the image
+                usable_rects.append(rect)
+	
+        msample = MultiSample(img, usable_rects)
+        self.learner.Update(msample, 0)
 
 
 '''
